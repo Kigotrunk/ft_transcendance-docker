@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/chat.css' %}" type="text/css">
+
+<div class="chat-list">
+
+<div class="chat-user active">
+	<img src="profile-picture.jpeg" alt="profile picture">
+	<div class="info">
+	<h4>Kenzo</h4>
+	<p>hello</p>
+	</div>
+	<div class="overlay"></div>
+</div>
+
+<div class="chat-user">
+	<img src="profile-picture.jpeg" alt="profile picture">
+	<div class="info">
+	<h4>Kenzo</h4>
+	<p>hello</p>
+	</div>
+	<div class="overlay"></div>
+</div>
+
+</div>
+<div class="talk">
+<div class="message send">hello</div>
+<div class="message received">hello</div>
+</div>
+
+{% endblock content %}
