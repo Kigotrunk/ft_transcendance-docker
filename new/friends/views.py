@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from friends.models import Friends
-from account.models import Account
+from myaccount.models import Account
 
 # Create your views here.
 

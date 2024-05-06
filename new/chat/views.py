@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import PrivateMessage, UserBlocked, Conversation
-from account.models import Account
+from myaccount.models import Account
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -9,44 +9,79 @@ from django.urls import reverse
 from django.db.models import Prefetch
 # Create your views here.
 
+
+
 @login_required
-def chat_view(request, username1, username2):
-    user1 = get_object_or_404(Account, username=username1)
-    user2 = get_object_or_404(Account, username=username2)
-    conversation = Conversation.objects.filter(user1=user1, user2=user2).union(Conversation.objects.filter(user1=user2, user2=user1)).first()
-    if not conversation:
-        conversation = Conversation(user1=user1, user2=user2)
-        conversation.save()
-    form = FormMessage(request.POST)
-    if request.method == 'POST':
-        if form.is_valid():
-            private_message = form.save(commit=False)
-            private_message.issuer = request.user
-            private_message.receiver = user1 if private_message.issuer == user2 else user2
-            private_message.conversation = conversation
-            private_message.save()
-        return redirect('chat_view', username1=username1, username2=username2)
-    else:
-        form = FormMessage()
-    messages = PrivateMessage.objects.filter(conversation=conversation).order_by('moment')
+def chat_view(request):
+    current_user = request.user
+    conversations_with_other_user = []
+    conversations = Conversation.objects.filter(user1=current_user) | Conversation.objects.filter(user2=current_user)
+    for conversation in conversations:
+        other_user = conversation.user1 if conversation.user2 == current_user else conversation.user2
+        conversations_with_other_user.append((conversation, other_user))
+    selected_conversation_id = request.GET.get('conversation_id')
+    selected_conversation = None
+    messages = []
+    form = FormMessage()
+    if selected_conversation_id:
+        selected_conversation = get_object_or_404(Conversation, id=selected_conversation_id)
+        messages = PrivateMessage.objects.filter(conversation=selected_conversation).order_by('moment')
+        if request.method == 'POST':
+            form = FormMessage(request.POST)
+            if form.is_valid():
+                private_message = form.save(commit=False)
+                private_message.issuer = current_user
+                private_message.receiver = selected_conversation.user1 if current_user == selected_conversation.user2 else selected_conversation.user2
+                private_message.conversation = selected_conversation
+                private_message.save()
+                return redirect(f'/chat/?conversation_id={selected_conversation_id}') 
     context = {
-        'conversation' : conversation,
-        'messages' : messages,
-        'form' : form,
-        'user1' : user1,
-        'user2' : user2,
+        'conversations_with_other_user': conversations_with_other_user,
+        'selected_conversation': selected_conversation,
+        'messages': messages,
+        'form': form,
     }
+
     return render(request, 'chat/chat.html', context)
 
+# @login_required
+# def chat_view(request, username1, username2):
+#     user1 = get_object_or_404(Account, username=username1)
+#     user2 = get_object_or_404(Account, username=username2)
+#     conversation = Conversation.objects.filter(user1=user1, user2=user2).union(Conversation.objects.filter(user1=user2, user2=user1)).first()
+#     if not conversation:
+#         conversation = Conversation(user1=user1, user2=user2)
+#         conversation.save()
+#     form = FormMessage(request.POST)
+#     if request.method == 'POST':
+#         if form.is_valid():
+#             private_message = form.save(commit=False)
+#             private_message.issuer = request.user
+#             private_message.receiver = user1 if private_message.issuer == user2 else user2
+#             private_message.conversation = conversation
+#             private_message.save()
+#         return redirect('chat_view', username1=username1, username2=username2)
+#     else:
+#         form = FormMessage()
+#     messages = PrivateMessage.objects.filter(conversation=conversation).order_by('moment')
+#     context = {
+#         'conversation' : conversation,
+#         'messages' : messages,
+#         'form' : form,
+#         'user1' : user1,
+#         'user2' : user2,
+#     }
+#     return render(request, 'chat/chat.html', context)
 
-@login_required
-def all_conversations_view(request):
-    current_user = request.user
-    conversations = Conversation.objects.filter(user1=current_user) | Conversation.objects.filter(user2=current_user)
-    context = {
-        'conversations': conversations,
-    }
-    return render(request, 'chat/all_conversations.html', context)
+
+# @login_required
+# def all_conversations_view(request):
+#     current_user = request.user
+#     conversations = Conversation.objects.filter(user1=current_user) | Conversation.objects.filter(user2=current_user)
+#     context = {
+#         'conversations': conversations,
+#     }
+#     return render(request, 'chat/all_conversations.html', context)
             
     
 

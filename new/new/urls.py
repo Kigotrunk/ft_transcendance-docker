@@ -21,8 +21,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 from front import views
 from django.conf.urls import include
+from django.urls import include
 
-from account.views import (
+urlpatterns = [
+    # Vos autres URL
+    path('accounts/', include('allauth.urls')),  # Inclure les URL de `django-allauth`
+]
+
+
+from myaccount.views import (
     register_view,
     login_view,
     logout_view,
@@ -35,7 +42,7 @@ from friends.views import (
 
 from chat.views import (
     chat_view,
-    all_conversations_view,
+    #all_conversations_view,
 )
 
 urlpatterns = [
@@ -48,13 +55,14 @@ urlpatterns = [
     path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-    path('profil/', include('account.urls', namespace = 'account')),
+    path('profil/', include('myaccount.urls', namespace = 'account')),
     path('update/', update_user_view, name='update_user'),
     path('profile/', views.profile , name='profile'),
-    path('game/', include('game.urls')),
-    path('chat/<str:username1>/<str:username2>', chat_view, name='chat_view'),
-    path('chat/', all_conversations_view, name='all_conversations'),
+    path('chat/', chat_view, name='chat_view'),
+    #path('chat/<str:username1>/<str:username2>', chat_view, name='chat_view'),
+    #path('chat/', all_conversations_view, name='all_conversations'),
     path('add-friend/<int:user_id>/', new_friend_view, name='add_friend'),
+    path('accounts/', include('allauth.urls')),
 ]
 
 

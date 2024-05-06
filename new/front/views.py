@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from account.models import Account
+from myaccount.models import Account
 
 # Create your views here.
 

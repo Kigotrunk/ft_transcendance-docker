@@ -1,4 +1,4 @@
-from account.models import Account
+from myaccount.models import Account
 from django import forms
 from .models import PrivateMessage
 

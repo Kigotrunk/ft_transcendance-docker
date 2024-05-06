@@ -29,10 +29,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = "account.Account"
+AUTH_USER_MODEL = "myaccount.Account"
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.AllowAllUsersModelBackend',
-    'account.backend.CaseModel'
+    'myaccount.backend.CaseModel',
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 
@@ -40,11 +42,10 @@ AUTHENTICATION_BACKENDS = (
 
 INSTALLED_APPS = [
     # MY APP
-    'account',
+    'myaccount',
     'front',
     'friends',
     'chat',
-    'game',
     # AUTO APP
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,7 +53,28 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # OAUTH2.0
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
+
+SITE_ID = 1
+
+SOCIALACCOUNT_PROVIDERS = {
+    '42': {
+        'APP': {
+            'client_id': 'u-s4t2ud-d115455920be4e8ebaa5ac2c9dcfea89a7d2ff886b63968e88281cc31bf28bc1',
+            'secret': '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',
+            'key': ''
+        },
+        'SCOPE': ['public'],
+         'AUTH_PARAMS': {
+            'redirect_uri': 'http://127.0.0.1:8000/accounts/42/login/callback/',
+        }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -62,6 +84,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'new.urls'

@@ -1,7 +1,7 @@
 from django.db import models
 from django.http import HttpResponse
 
-from account.models import Account
+from myaccount.models import Account
 
 # Create your models here.
 
