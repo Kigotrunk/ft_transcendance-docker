@@ -51,7 +51,7 @@ urlpatterns = [
     path('profil/', include('account.urls', namespace = 'account')),
     path('update/', update_user_view, name='update_user'),
     path('profile/', views.profile , name='profile'),
-    path('game/', include('pong.urls')),
+    path('game/', include('game.urls')),
     path('chat/<str:username1>/<str:username2>', chat_view, name='chat_view'),
     path('chat/', all_conversations_view, name='all_conversations'),
     path('add-friend/<int:user_id>/', new_friend_view, name='add_friend'),
