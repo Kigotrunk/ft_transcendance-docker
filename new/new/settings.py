@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'front',
     'friends',
     'chat',
-    'pong',
+    'game',
     # AUTO APP
     'django.contrib.admin',
     'django.contrib.auth',

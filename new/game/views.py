@@ -143,7 +143,7 @@ def screen(win, padTab, ball, inMenu, buttons, diff, end, timer, leftScore, righ
 
     pygame.display.update()
 
-def game(pve = True, diff = 2) :
+def run(pve = True, diff = 2) :
 
     start = pygame.time.get_ticks()
     refreshRate = pygame.time.Clock()
@@ -244,19 +244,19 @@ def launch() :
                     toPrint = (soloButton, versusButton, onlineButton, backPlayButton)
 
                 elif easyButton.checkForInput(mouse):
-                    game(diff=1)
+                    run(diff=1)
 
                 elif mediumButton.checkForInput(mouse):
-                    game(diff=2)
+                    run(diff=2)
 
                 elif hardButton.checkForInput(mouse):
-                    game(diff=3)
+                    run(diff=3)
                 
                 elif survivalButton.checkForInput(mouse):
-                    game(diff=4)
+                    run(diff=4)
 
                 elif versusButton.checkForInput(mouse):
-                    game(pve=False)
+                    run(pve=False)
 
                 elif quitButton.checkForInput(mouse):
                     pygame.quit()
@@ -264,6 +264,6 @@ def launch() :
 
         screen(win, (leftPad, rightPad), bal, True, toPrint, None, None, None, None, None)
 
-def index(request) :
+def game(request) :
     launch()
     return render(request, 'home.html')
