@@ -30,7 +30,6 @@
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 .profile-picture .material-icons {
@@ -40,11 +39,17 @@
 
 .profile-picture {
     position: relative;
+    width: 200px;
+    height: 200px;
     margin-top: 24px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 .img-hover {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 200px;
     height: 200px;
     display: flex;
@@ -110,7 +115,7 @@
     .card {
         box-shadow: 0px 0px 10px var(--primary);
     }
-    .profile-picture img {
+    .profile-picture {
         box-shadow: 0px 0px 10px var(--primary);
     }
 }

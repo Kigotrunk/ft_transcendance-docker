@@ -1,57 +1,45 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div>
-            <h3>Conversations</h3>
-            <ul>
-                {% for conversation, other_user in conversations_with_other_user %}
-                    <li>
-                        <a href="?conversation_id={{ conversation.id }}">
-                            {{ other_user.username }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div>
-            {% if selected_conversation %}
-                <h3>Conversation between {{ selected_conversation.user1.username }} and {{ selected_conversation.user2.username }}</h2>
-                <div>
-                    {% for message in messages %}
-                        <p><strong>{{ message.issuer.username }}:</strong> {{ message.message }} <small>{{ message.moment }}</small></p>
-                    {% endfor %}
-                </div>
-                <h3>Write a message:</h3>
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit">Send</button>
-                </form>
-            {% else %}
-                <p>Select a conversation on the left to view messages and write a new one.</p>
-            {% endif %}
-        </div>
-    </div>
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/chat.css' %}" type="text/css">
+
+<div class="chat-list">
+
+{% for conversation, other_user in conversations_with_other_user %}
+	<a href="?conversation_id={{ conversation.id }}" class="chat-user">
+		<img src="profile-picture.jpeg" alt="profile picture">
+		<div class="info">
+		<h4>Kenzo</h4>
+		<p>hello</p>
+		</div>
+		<div class="overlay"></div>
+	</a>
+{% endfor %}
+
 </div>
-{% endblock %}
 
+<div style="display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1;">
 
-{% comment %} {% extends 'base.html' %}
+{% if selected_conversation %}
+	<div class="talk">
+		{% for message in messages %}
+			<div class="message send">{{ message.message }}</div>
+		{% endfor %}
+	</div>
+	<div class="input">
+			<input type="text" placeholder="Type a message">
+			<button><span class="material-icons">send</span></button>
+	</div>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Send</button>
+    </form>
+{% endif %}
 
-{% block content %}
-<h2>Conversation between {{ user1.username }} and {{ user2.username }}</h2>
-<div>
-    {% for message in messages %}
-        <p><strong>{{ message.issuer.username }}:</strong> {{ message.message }} <small>{{ message.moment }}</small></p>
-    {% endfor %}
 </div>
-<h3>Write a message:</h3>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Send</button>
-</form>
-{% endblock %} {% endcomment %}
 
+{% endblock content %}
