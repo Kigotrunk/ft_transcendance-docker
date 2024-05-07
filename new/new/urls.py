@@ -24,8 +24,7 @@ from django.conf.urls import include
 from django.urls import include
 
 urlpatterns = [
-    # Vos autres URL
-    path('accounts/', include('allauth.urls')),  # Inclure les URL de `django-allauth`
+    path('accounts/', include('allauth.urls')),
 ]
 
 
