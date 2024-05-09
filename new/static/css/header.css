@@ -16,14 +16,16 @@
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	gap: 6px;
 	padding: 0px 24px 0px 24px;
 	border-radius: 2px;
 	transition: all 0.1s;
 	margin-left: auto;
 }
 
-.user .material-icons {
-	font-size: 32px;
+.user img {
+	font-size: 1.777rem;
+	border-radius: 100%;
 }
 
 .user:hover {
@@ -63,59 +65,59 @@
 }
 
 .btn-menu:hover {
-	background-color: rgba(255, 255, 255, 0.1);
+	background-color: rgba(0, 0, 0, 0.1);
 	cursor: pointer;
 }
 
 .btn-menu:active {
-	background-color: rgba(255, 255, 255, 0.2) !important;
+	background-color: rgba(0, 0, 0, 0.2) !important;
 }
 
 .btn-menu:active .material-icons {
 	scale: 0.9;
 }
 
-.input {
+.search-bar {
     display: flex;
     flex-direction: row;
     align-items: center;
     height: 48px;
     margin: 8px;
-    border: 1px solid var(--primary);
+    border: 1px solid rgba(0, 0, 0, 0.1);
 	margin: 0px 16px;
 }
 
-.input input {
+.search-bar input {
     width: 100%;
     font-family: "Gantari", sans-serif;
     font-size: 1.333rem;
     background-color: var(--background);
-    color: white;
+    color: var(--text);
     padding: 0 12px;
     border: none;
 }
 
-.input button {
+.search-bar button {
     position: relative;
     width: 48px;
     height: 48px;
     background-color: var(--background);
-    color: white;
+    color: var(--text);
     border: none;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-.input input:focus {
+.search-bar input:focus {
     outline: none;
 }
 
-.input:focus-within {
+.search-bar:focus-within {
     border: 2px solid var(--primary)
 }
 
-.input button:hover {
+.search-bar button:hover {
     cursor: pointer;
 }
 
@@ -126,6 +128,15 @@
 }
 
 @media (prefers-color-scheme: dark) {
+	.btn-menu:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+	.btn-menu:active {
+		background-color: rgba(255, 255, 255, 0.2) !important;
+	}
+	.search-bar {
+		border: 1px solid var(--primary);
+	}
     .user:hover {
         background-color: rgba(255, 255, 255, 0.1);
     }
