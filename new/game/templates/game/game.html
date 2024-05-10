@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Button</title>
+</head>
+<body>
+    <button onclick="connectWebSocket()">Connect WebSocket</button>
+
+    <script>
+        function connectWebSocket() {
+            // Vérifier si WebSocket est supporté par le navigateur
+            if ("WebSocket" in window) {
+                // Ouvrir la connexion WebSocket
+                var socket = new WebSocket("wss://localhost:8000/ws/game/");
+
+                // Gérer l'ouverture de la connexion
+                socket.onopen = function() {
+                    console.log("WebSocket connected!");
+                };
+
+                // Gérer la fermeture de la connexion
+                socket.onclose = function(event) {
+                    console.log("WebSocket connection closed:", event);
+                };
+
+                // Gérer les erreurs de connexion
+                socket.onerror = function(error) {
+                    console.error("WebSocket error:", error);
+                };
+            } else {
+                // WebSocket n'est pas supporté
+                console.error("WebSocket is not supported by your browser.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'friends',
     'chat',
 	'api',
+    'game',
     # AUTO APP
     'django.contrib.admin',
     'django.contrib.auth',
@@ -54,7 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'channels',
     # OAUTH2.0
     'allauth',
     'allauth.account',
@@ -106,7 +107,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'new.wsgi.application'
+#WSGI_APPLICATION = 'new.wsgi.application'
+ASGI_APPLICATION = 'new.asgi.application'
 
 
 # Database

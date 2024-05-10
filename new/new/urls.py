@@ -24,8 +24,7 @@ from django.conf.urls import include
 from django.urls import include
 
 urlpatterns = [
-    # Vos autres URL
-    path('accounts/', include('allauth.urls')),  # Inclure les URL de `django-allauth`
+    path('accounts/', include('allauth.urls')),
 ]
 
 
@@ -45,8 +44,12 @@ from chat.views import (
     #all_conversations_view,
 )
 
+from game.views import (
+    pong
+)
+
 from api.views import (
-    AuthStudent,
+    AuthStudent
 )
 
 urlpatterns = [
@@ -68,8 +71,8 @@ urlpatterns = [
     path('add-friend/<int:user_id>/', new_friend_view, name='add_friend'),
     path('accounts/', include('allauth.urls')),
     path('api/', AuthStudent, name='api'),
+    path('game/', pong, name='game'),
 ]
-
 
 if settings.DEBUG:
     urlpatterns+= static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
