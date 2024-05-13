@@ -44,10 +44,6 @@ from chat.views import (
     #all_conversations_view,
 )
 
-from game.views import (
-    pong
-)
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
@@ -66,7 +62,7 @@ urlpatterns = [
     #path('chat/', all_conversations_view, name='all_conversations'),
     path('add-friend/<int:user_id>/', new_friend_view, name='add_friend'),
     path('accounts/', include('allauth.urls')),
-    path('game/', pong, name='game'),
+    path("game/", include("game.urls")),
 ]
 
 if settings.DEBUG:
