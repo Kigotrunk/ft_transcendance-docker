@@ -44,6 +44,13 @@ from chat.views import (
     #all_conversations_view,
 )
 
+from game.views import (
+    pong
+)
+
+from api.views import (
+    AuthStudent
+)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
@@ -63,6 +70,7 @@ urlpatterns = [
     path('add-friend/<int:user_id>/', new_friend_view, name='add_friend'),
     path('accounts/', include('allauth.urls')),
     path("game/", include("game.urls")),
+    path('api/', AuthStudent, name='api'),
 ]
 
 if settings.DEBUG:

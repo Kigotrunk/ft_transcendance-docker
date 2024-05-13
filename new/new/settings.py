@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'front',
     'friends',
     'chat',
+	'api',
     'game',
     # AUTO APP
     'django.contrib.admin',
