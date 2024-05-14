@@ -41,11 +41,13 @@ AUTHENTICATION_BACKENDS = (
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     # MY APP
     'myaccount',
     'front',
     'friends',
     'chat',
+	'api',
     'game',
     # AUTO APP
     'django.contrib.admin',
@@ -54,7 +56,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
     # OAUTH2.0
     'allauth',
     'allauth.account',
@@ -106,9 +107,16 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = "new.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 #WSGI_APPLICATION = 'new.wsgi.application'
-ASGI_APPLICATION = 'new.asgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

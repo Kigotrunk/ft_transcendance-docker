@@ -1,39 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Button</title>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
 </head>
 <body>
-    <button onclick="connectWebSocket()">Connect WebSocket</button>
+    What chat room would you like to enter?<br>
+    <input id="room-name-input" type="text" size="100"><br>
+    <input id="room-name-submit" type="button" value="Enter">
 
     <script>
-        function connectWebSocket() {
-            // Vérifier si WebSocket est supporté par le navigateur
-            if ("WebSocket" in window) {
-                // Ouvrir la connexion WebSocket
-                var socket = new WebSocket("wss://localhost:8000/ws/game/");
-
-                // Gérer l'ouverture de la connexion
-                socket.onopen = function() {
-                    console.log("WebSocket connected!");
-                };
-
-                // Gérer la fermeture de la connexion
-                socket.onclose = function(event) {
-                    console.log("WebSocket connection closed:", event);
-                };
-
-                // Gérer les erreurs de connexion
-                socket.onerror = function(error) {
-                    console.error("WebSocket error:", error);
-                };
-            } else {
-                // WebSocket n'est pas supporté
-                console.error("WebSocket is not supported by your browser.");
+        document.querySelector('#room-name-input').focus();
+        document.querySelector('#room-name-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#room-name-submit').click();
             }
-        }
+        };
+
+        document.querySelector('#room-name-submit').onclick = function(e) {
+            var roomName = document.querySelector('#room-name-input').value;
+            window.location.pathname = '/game/' + roomName + '/';
+        };
     </script>
 </body>
 </html>
