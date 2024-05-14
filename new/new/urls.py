@@ -40,7 +40,9 @@ from friends.views import (
 )
 
 from chat.views import (
-    chat_view,
+    # chat_view,
+    chat_list,
+    get_chat,
     #all_conversations_view,
 )
 
@@ -61,7 +63,9 @@ urlpatterns = [
     path('profil/', include('myaccount.urls', namespace = 'account')),
     path('update/', update_user_view, name='update_user'),
     path('profile/', views.profile , name='profile'),
-    path('chat/', chat_view, name='chat_view'),
+    # path('chat/', chat_view, name='chat_view'),
+    path('chat_list/', chat_list, name='chat_list'),
+    path('get_chat/<int:chat_id>/', get_chat, name='get_chat'),
     #path('chat/<str:username1>/<str:username2>', chat_view, name='chat_view'),
     #path('chat/', all_conversations_view, name='all_conversations'),
     path('add-friend/<int:user_id>/', new_friend_view, name='add_friend'),

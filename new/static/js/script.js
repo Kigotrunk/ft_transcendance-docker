@@ -53,3 +53,61 @@ const showMenu = () => {
     }
   }
 }
+
+const showChat = (id) => {
+  const content = document.querySelector('.content');
+  fetch('get_chat/' + id)
+  .then(response => response.text())
+  .then(text => {
+    const data = JSON.parse(text);
+    console.log(data);
+    let talkDiv = document.querySelector('.talk');
+    if (!talkDiv) {
+      talkDiv = document.createElement('div');
+      talkDiv.classList.add('talk');
+    }
+    else 
+      talkDiv.innerHTML = '';
+    data.messages.forEach(message => {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(message.issuer === data.other_user ? 'received' : 'send');
+        messageDiv.textContent = message.message;
+        talkDiv.appendChild(messageDiv);
+    });
+    // const messageForm = document.createElement('form');
+    // messageForm.method = 'POST';
+    // const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value; // Assuming CSRF token is available in the page
+    // messageForm.innerHTML = `
+    //     <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+    //     ${data.form}
+    // `;
+    // talkDiv.appendChild(messageForm);
+    content.appendChild(talkDiv);
+  });
+}
+
+const showChatList = () => {
+  const content = document.querySelector('.content');
+  fetch('chat_list')
+    .then(response => response.text())
+    .then(text => {
+      const data = JSON.parse(text);
+      console.log(data);
+      const chatList = document.createElement('div');
+        chatList.classList.add('chat-list');
+        data.conversations.forEach(conversation => {
+            const conversationLink = document.createElement('a');
+            conversationLink.onclick = function () { showChat(conversation.id); };
+            conversationLink.classList.add('chat-user');
+            conversationLink.innerHTML = `
+                <img src="" alt="profile picture">
+                <h4>${conversation.other_user}</h4>
+                <div class="overlay"></div>
+            `;
+            chatList.appendChild(conversationLink);
+        });
+        content.innerHTML = '';
+        content.appendChild(chatList);
+    });
+}
