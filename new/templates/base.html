@@ -9,6 +9,7 @@
       rel="stylesheet">
       <link rel="stylesheet" href="{% static 'css/colors.css' %}" type="text/css">
       <link rel="stylesheet" href="{% static 'css/chat.css' %}" type="text/css">
+      <link rel="stylesheet" href="{% static 'css/profile.css' %}" type="text/css">
     <title>Transcendance</title>
 </head>
 <body>
@@ -20,7 +21,7 @@
 {% include 'snippets/menu.html' %}
 
 <!-- BODY -->
-<div class="content">
+<div class="content" style="flex-grow: 1;">
     {% block content %}
 
     {% endblock content %}

@@ -37,12 +37,15 @@ def     pve(ball, rightPad, leftPad, key, winHeight) :
             leftPad.move(up = False)
 """
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 def lobby(request):
     return render(request, "game/game.html")
 
 def room(request, room_name):
 
-    channel_layer = channel_layer.get_channel_layer()
+    channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         "game_room_name",  # Nom du groupe WebSocket où les clients sont connectés
         {

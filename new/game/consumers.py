@@ -1,4 +1,5 @@
 import json
+import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from .models import ball, pad  # Supposons que vous avez un modèle pour stocker l'état du jeu
@@ -10,9 +11,9 @@ class player(AsyncWebsocketConsumer):
     winWidth = 800 # à redefinir
     winHeight = 600 # à redefinir
     
-    orb = ball(None, None, None)
-    leftPad = pad(None, None, None, None, None, None)
-    rightPad = pad(None, None, None, None, None, None)
+    orb = ball(winWidth // 2, winHeight // 2, 0)
+    leftPad = pad(0, 0, padWidth, padHeight, 0, 0)
+    rightPad = pad(800, 600, padWidth, padHeight, 0, 0)
     
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -93,8 +94,8 @@ class player(AsyncWebsocketConsumer):
 
     async def start_sending_game_state(self):
         while True:
-            await self.orb.move()
-            await self.collisions()
+            self.orb.move()
+            self.collisions(self.orb, self.leftPad, self.rightPad)
             await self.send_game_state_update()
             await asyncio.sleep(0.1)
 

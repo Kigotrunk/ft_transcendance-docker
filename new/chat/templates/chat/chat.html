@@ -6,6 +6,8 @@
 
 <link rel="stylesheet" href="{% static 'css/chat.css' %}" type="text/css">
 
+<div class="chat-content">
+
 <div class="chat-list">
 
 {% for conversation, other_user in conversations_with_other_user %}
@@ -31,15 +33,17 @@
 		{% endfor %}
 	</div>
     <form method="POST">
-        {% csrf_token %}
-        {% for field in form %}
-    	<div class="input">
-        	{{ field }}
+		{% csrf_token %}
+		{% for field in form %}
+		<div class="input">
+			{{ field }}
 			<button type="submit" class="send-button" disabled><span class="material-icons">send</span></button>
-    	</div>
-{% endfor %}
-    </form>
+		</div>
+		{% endfor %}
+	</form>
 {% endif %}
+
+</div>
 
 </div>
 

@@ -12,6 +12,8 @@
     <script>
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
+        console.log('ws://' + window.location.host + '/ws/game/' + roomName + '/')
+
         const chatSocket = new WebSocket(
             'ws://'
             + window.location.host
@@ -21,6 +23,8 @@
         );
 
         chatSocket.onmessage = function(e) {
+            console.log('onmessage');
+            console.log(e);
             const data = JSON.parse(e.data);
             document.querySelector('#chat-log').value += (data.message + '\n');
         };

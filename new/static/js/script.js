@@ -55,8 +55,16 @@ const showMenu = () => {
 }
 
 const showChat = (id) => {
-  const content = document.querySelector('.content');
-  fetch('get_chat/' + id)
+  const chatContent = document.querySelector('.chat-content');
+  let rightSection = document.querySelector('.chat-right-section');
+    if (!rightSection) {
+      rightSection = document.createElement('div');
+      rightSection.classList.add('chat-right-section');
+    }
+    else 
+      rightSection.innerHTML = '';
+
+  fetch('/get_chat/' + id)
   .then(response => response.text())
   .then(text => {
     const data = JSON.parse(text);
@@ -71,25 +79,36 @@ const showChat = (id) => {
     data.messages.forEach(message => {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message');
-        messageDiv.classList.add(message.issuer === data.other_user ? 'received' : 'send');
+        messageDiv.classList.add(message.issuer === data.uid ? 'received' : 'send');
         messageDiv.textContent = message.message;
         talkDiv.appendChild(messageDiv);
     });
-    // const messageForm = document.createElement('form');
-    // messageForm.method = 'POST';
-    // const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value; // Assuming CSRF token is available in the page
-    // messageForm.innerHTML = `
-    //     <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
-    //     ${data.form}
-    // `;
-    // talkDiv.appendChild(messageForm);
-    content.appendChild(talkDiv);
+    const messageForm = document.createElement('form');
+    messageForm.method = 'POST';
+    messageForm.innerHTML = '<div class="input"><input type=\"text\" name=\"message\" class=\"text-input\" placeholder=\"Type a message\" autocomplete=\"off\" required id=\"id_message\"><button type="submit" class="send-button" disabled><span class="material-icons">send</span></button></div>';
+
+    rightSection.appendChild(talkDiv);
+    rightSection.appendChild(messageForm);
+    chatContent.appendChild(rightSection);
+    talkDiv.scrollTop = talkDiv.scrollHeight;
+  });
+  const button = document.querySelector('.send-button');
+  const input = document.querySelector('.text-input');
+  input.addEventListener('input', () => {
+    console.log("change");
+    if (input.value === '')
+      button.disabled = true;
+    else
+      button.disabled = false;
   });
 }
 
 const showChatList = () => {
   const content = document.querySelector('.content');
-  fetch('chat_list')
+  const chatContent = document.createElement('div');
+  chatContent.classList.add('chat-content');
+
+  fetch('/chat_list')
     .then(response => response.text())
     .then(text => {
       const data = JSON.parse(text);
@@ -101,13 +120,101 @@ const showChatList = () => {
             conversationLink.onclick = function () { showChat(conversation.id); };
             conversationLink.classList.add('chat-user');
             conversationLink.innerHTML = `
-                <img src="" alt="profile picture">
-                <h4>${conversation.other_user}</h4>
+                <img src="${conversation.other_user.pp}" alt="profile picture">
+                <h4>${conversation.other_user.username}</h4>
                 <div class="overlay"></div>
             `;
             chatList.appendChild(conversationLink);
         });
         content.innerHTML = '';
-        content.appendChild(chatList);
+        chatContent.appendChild(chatList);
+        content.appendChild(chatContent);
     });
+}
+
+const myProfile = () => {
+const leftSection = document.createElement('div');
+leftSection.classList.add('card', 'left-section');
+
+const profilePicture = document.createElement('div');
+profilePicture.classList.add('profile-picture');
+
+const imgHover = document.createElement('div');
+imgHover.classList.add('img-hover');
+imgHover.innerHTML = '<span class="material-icons">edit</span>';
+
+const profileImg = document.createElement('img');
+// profileImg.src = request.user.profile_picture.url;
+profileImg.alt = 'profile picture';
+
+const username = document.createElement('h2');
+// username.textContent = user.username;
+
+profilePicture.appendChild(imgHover);
+profilePicture.appendChild(profileImg);
+leftSection.appendChild(profilePicture);
+leftSection.appendChild(username);
+
+const rightSection = document.createElement('div');
+rightSection.classList.add('card', 'right-section');
+
+const line1 = document.createElement('div');
+line1.classList.add('line');
+
+const winsInfo = document.createElement('div');
+winsInfo.classList.add('info');
+const winsTitle = document.createElement('h3');
+winsTitle.textContent = 'WINS';
+const winsValue = document.createElement('span');
+winsValue.textContent = '10';
+winsInfo.appendChild(winsTitle);
+winsInfo.appendChild(winsValue);
+
+const rankInfo = document.createElement('div');
+rankInfo.classList.add('info');
+const rankTitle = document.createElement('h3');
+rankTitle.textContent = 'RANK';
+const rankValue = document.createElement('span');
+rankValue.textContent = 'Gold';
+rankInfo.appendChild(rankTitle);
+rankInfo.appendChild(rankValue);
+
+line1.appendChild(winsInfo);
+line1.appendChild(rankInfo);
+
+const line2 = document.createElement('div');
+line2.classList.add('line');
+
+const globalInfo = document.createElement('div');
+globalInfo.classList.add('info');
+const globalTitle = document.createElement('h3');
+globalTitle.textContent = 'GLOBAL';
+const globalValue = document.createElement('span');
+globalValue.textContent = '#1';
+globalInfo.appendChild(globalTitle);
+globalInfo.appendChild(globalValue);
+
+const winsInfo2 = document.createElement('div');
+winsInfo2.classList.add('info');
+const winsTitle2 = document.createElement('h3');
+winsTitle2.textContent = 'WINS';
+const winsValue2 = document.createElement('span');
+winsValue2.textContent = '10';
+winsInfo2.appendChild(winsTitle2);
+winsInfo2.appendChild(winsValue2);
+
+line2.appendChild(globalInfo);
+line2.appendChild(winsInfo2);
+
+rightSection.appendChild(line1);
+rightSection.appendChild(line2);
+
+// Append the sections to the content div
+const contentDiv = document.querySelector('.content');
+contentDiv.innerHTML = '';
+const profileDiv = document.createElement('div');
+profileDiv.classList.add('profile-content');
+profileDiv.appendChild(leftSection);
+profileDiv.appendChild(rightSection);
+contentDiv.appendChild(profileDiv);
 }
