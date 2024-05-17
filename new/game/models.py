@@ -1,7 +1,7 @@
 from django.db import models
 import threading, time
 from random import randint
-
+"""
 class algorithm(models.Model) : 
     
     #data order, Switch, difficulty, actualRng, smartShots, adaptation#
@@ -109,7 +109,7 @@ class algorithm(models.Model) :
         rng = randint(0, self.data[3])
         if rng == self.data[3] - 1 :
             return True
-
+"""
 class   pad(models.Model) :
 
     speed = 5
@@ -120,7 +120,7 @@ class   pad(models.Model) :
         self.width = width
         self.height = height
         self.travelTime = 0
-        self.algorithm = algorithm(bal, self, diff)
+        #self.algorithm = algorithm(bal, self, diff)
     
     def move(self, up = True):
 
@@ -166,3 +166,4 @@ class   ball(models.Model) :
         self.x = self.ogX
         self.y = self.ogY
         self.ySpeed = self.xSpeed
+

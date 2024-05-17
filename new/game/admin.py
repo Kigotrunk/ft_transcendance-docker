@@ -3,4 +3,4 @@ from .models import *
 
 admin.site.register(pad)
 admin.site.register(ball)
-admin.site.register(algorithm)
+#admin.site.register(algorithm)
