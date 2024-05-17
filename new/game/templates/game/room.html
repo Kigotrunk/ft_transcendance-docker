@@ -1,53 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <title>Chat Room</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong Game</title>
+    <style>
+        #gameCanvas {
+            border: 1px solid black;
+            display: block;
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
-    <input id="chat-message-input" type="text" size="100"><br>
-    <input id="chat-message-submit" type="button" value="Send">
-    {{ room_name|json_script:"room-name" }}
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
     <script>
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const roomName = "{{ room_name }}";
+        const socket = new WebSocket(`ws://${window.location.host}/ws/game/${roomName}/`);
 
-        console.log('ws://' + window.location.host + '/ws/game/' + roomName + '/')
+        let ball = {x: 400, y: 300};
+        let leftPad = {y: 250};
+        let rightPad = {y: 250};
 
-        const chatSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/game/'
-            + roomName
-            + '/'
-        );
+        socket.onopen = function(event) {
+            console.log("WebSocket is open now.");
+        };        
 
-        chatSocket.onmessage = function(e) {
-            console.log('onmessage');
-            console.log(e);
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log(`Received game state: Ball at (${data.ball_x}, ${data.ball_y}), Left pad at ${data.left_pad_y}, Right pad at ${data.right_pad_y}`);
+            ball.x = data.ball_x;
+            ball.y = data.ball_y;
+            leftPad.y = data.left_pad_y;
+            rightPad.y = data.right_pad_y;
+            draw();
         };
 
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit').click();
+        document.addEventListener('keydown', function(event) {
+            console.log(`Key pressed: ${event.key}`);
+            if (event.key === 'z' || event.key === 's' || event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                socket.send(JSON.stringify({'type': event.key}));
             }
-        };
+        });
 
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
-        };
+        function draw() {
+            console.log("Drawing game state.");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(ball.x - 5, ball.y - 5, 10, 10);
+            ctx.fillRect(10, leftPad.y, 20, 100);
+            ctx.fillRect(770, rightPad.y, 20, 100);
+        }
+        draw();
     </script>
 </body>
 </html>

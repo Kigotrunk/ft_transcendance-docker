@@ -146,24 +146,11 @@ class   ball(models.Model) :
         self.x += self.xSpeed
         self.y += self.ySpeed
     
-    def reset(self, leftScore, rightScore, oldScore):
+    def reset(self):
 
         self.x = self.ogX
         self.y = self.ogY
         self.ySpeed = self.xSpeed
-        if leftScore > 1 and leftScore % 2 == 0 and leftScore > oldScore :
-            oldScore = leftScore
-            self.xSpeed += 1
-        if rightScore > 1 and rightScore % 2 == 0 and rightScore > oldScore :
-            oldScore = rightScore
-            self.xSpeed += 1
 
     def getxSpeed(self):
         return self.xSpeed
-
-    def resetMenu(self) :
-
-        self.x = self.ogX
-        self.y = self.ogY
-        self.ySpeed = self.xSpeed
-
