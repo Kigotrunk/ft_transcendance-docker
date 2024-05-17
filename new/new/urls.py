@@ -41,7 +41,6 @@ from friends.views import (
 
 from chat.views import (
     chat_view,
-    #all_conversations_view,
 )
 
 from game.views import (
@@ -67,9 +66,8 @@ urlpatterns = [
     path('profile/', views.profile , name='profile'),
     path('chat/', chat_view, name='chat_view'),
     #path('chat/<str:username1>/<str:username2>', chat_view, name='chat_view'),
-    #path('chat/', all_conversations_view, name='all_conversations'),
     path('add-friend/<int:user_id>/', new_friend_view, name='add_friend'),
-    path('accounts/', include('allauth.urls')),
+    #path('accounts/', include('allauth.urls')),
     path('api/', AuthStudent, name='api'),
     path('game/', pong, name='game'),
 ]

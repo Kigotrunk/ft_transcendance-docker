@@ -7,8 +7,8 @@ from django.http import JsonResponse
 from .forms import FormMessage
 from django.urls import reverse
 from django.db.models import Prefetch
-# Create your views here.
 
+# Create your views here.
 
 
 @login_required
@@ -34,14 +34,13 @@ def chat_view(request):
                 private_message.receiver = selected_conversation.user1 if current_user == selected_conversation.user2 else selected_conversation.user2
                 private_message.conversation = selected_conversation
                 private_message.save()
-                return redirect(f'/chat/?conversation_id={selected_conversation_id}') 
+                return redirect(f'/chat/?conversation_id={selected_conversation_id}')
     context = {
         'conversations_with_other_user': conversations_with_other_user,
         'selected_conversation': selected_conversation,
         'messages': messages,
         'form': form,
     }
-
     return render(request, 'chat/chat.html', context)
 
 # @login_required
