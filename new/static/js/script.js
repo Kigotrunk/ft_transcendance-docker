@@ -85,21 +85,25 @@ const showChat = (id) => {
     });
     const messageForm = document.createElement('form');
     messageForm.method = 'POST';
-    messageForm.innerHTML = '<div class="input"><input type=\"text\" name=\"message\" class=\"text-input\" placeholder=\"Type a message\" autocomplete=\"off\" required id=\"id_message\"><button type="submit" class="send-button" disabled><span class="material-icons">send</span></button></div>';
-
+    messageForm.innerHTML = `
+      <div class="input">
+        <input type=\"text\" name=\"message\" class=\"text-input\" placeholder=\"Type a message\" autocomplete=\"off\" required id=\"id_message\">
+        <button type="submit" class="send-button" disabled><span class="material-icons">send</span></button>
+      </div>
+    `
     rightSection.appendChild(talkDiv);
     rightSection.appendChild(messageForm);
     chatContent.appendChild(rightSection);
     talkDiv.scrollTop = talkDiv.scrollHeight;
-  });
-  const button = document.querySelector('.send-button');
-  const input = document.querySelector('.text-input');
-  input.addEventListener('input', () => {
-    console.log("change");
-    if (input.value === '')
-      button.disabled = true;
-    else
-      button.disabled = false;
+
+    const button = document.querySelector('.send-button');
+    const input = document.querySelector('.text-input');
+    input.addEventListener('input', () => {
+      if (input.value === '')
+        button.disabled = true;
+      else
+        button.disabled = false;
+    });
   });
 }
 

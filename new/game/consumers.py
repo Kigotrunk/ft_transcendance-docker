@@ -29,6 +29,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         }
 
     async def disconnect(self, close_code):
+        # print("disconnect !")
         if self.channel_name in PongConsumer.players:
             del PongConsumer.players[self.channel_name]
         
@@ -44,6 +45,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
+
+        # print(text_data)
 
         if 'action' in data:
             action = data['action']
@@ -82,9 +85,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                         }
                     )
             elif action == 'move':
-                if self.player_number == 'left':
+                if data['player'] == 'left':
                     self.paddle1_position = min(max(self.paddle1_position + data['delta'], 0), 100)
-                elif self.player_number == 'right':
+                elif data['player'] == 'right':
                     self.paddle2_position = min(max(self.paddle2_position + data['delta'], 0), 100)
 
 
@@ -153,6 +156,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             'paddle2_position': self.paddle2_position,
             'score': self.score,
         }
+        # print (game_state)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
