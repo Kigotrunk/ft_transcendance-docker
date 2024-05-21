@@ -73,7 +73,7 @@ urlpatterns = [
     #path('chat/', all_conversations_view, name='all_conversations'),
     path('add-friend/<int:user_id>/', new_friend_view, name='add_friend'),
     path('accounts/', include('allauth.urls')),
-    path("game/", include("game.urls")),
+    path('', include('game.urls')),
     path('api/', AuthStudent, name='api'),
 ]
 

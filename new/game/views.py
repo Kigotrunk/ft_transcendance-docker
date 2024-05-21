@@ -34,24 +34,10 @@ def     pve(ball, rightPad, leftPad, key, winHeight) :
             leftPad.move(up = False)
 """
 
-from asgiref.sync import async_to_sync
 from django.shortcuts import render
-from channels.layers import get_channel_layer
 
-def lobby(request):
-    return render(request, "game/game.html")
+def rooms(request):
+    return render(request, 'rooms.html')
 
-def room(request, room_name):
-    
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        "game_%s" % room_name,
-        {
-            "type": "game_state_update",
-            "ball_x": winWidth // 2,
-            "ball_y": winHeight // 2,
-            "left_pad_y": winHeight // 2 - padHeight // 2,
-            "right_pad_y": winHeight // 2 - padHeight // 2,
-        }
-    )
-    return render(request, "game/room.html", {"room_name": room_name})
+def game(request, room_name):
+    return render(request, 'game.html', {'room_name': room_name})
