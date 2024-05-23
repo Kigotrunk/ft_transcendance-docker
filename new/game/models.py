@@ -1,6 +1,9 @@
 from django.db import models
 import threading, time
 from random import randint
+import asyncio
+import time
+
 """
 class algorithm(models.Model) : 
     
@@ -114,6 +117,8 @@ class algorithm(models.Model) :
 class   pad:
 
     speed = 1
+    move_task = None
+
     def __init__(self, x, y, width, height, bal, diff, playerPad) :
 
         self.x = self.ogX = x
@@ -137,6 +142,20 @@ class   pad:
             if self.y < 520 :
                 self.y += 10
 
+    async def move_loop(self, direction):
+        if (direction == 1):
+            while self.y > 0:
+                self.y -= 5
+                # print(self.y)
+                await asyncio.sleep(0.01)
+                
+        elif (direction == -1):
+            while self.y < 520:
+                self.y += 5
+                # print(self.y)
+                await asyncio.sleep(0.01)
+
+
     def reset(self):
 
         self.x = self.ogX
@@ -145,6 +164,7 @@ class   pad:
 class   ball:
 
     maxSpeed = 6
+    move_task = None
 
     def __init__(self, x, y, rad):
 

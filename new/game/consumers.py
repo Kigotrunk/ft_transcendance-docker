@@ -93,15 +93,19 @@ class PongConsumer(AsyncWebsocketConsumer):
                 #print(direction)
                 player = PongConsumer.players[self.channel_name]['player_number']
                 if player == 'left':
-                    if direction == -1:
-                        self.testG.move(False)    
-                    if direction == 1:
-                        self.testG.move(True)
+                    if (self.testG.move_task):
+                        self.testG.move_task.cancel()
+                    if (direction == 0):
+                        self.testG.move_task = None
+                    else:
+                        self.testG.move_task = asyncio.create_task( self.testG.move_loop(direction) )
                 elif player == 'right':
-                    if direction == -1:
-                        self.testD.move(False)
-                    elif direction == 1:
-                        self.testD.move(True)
+                    if (self.testD.move_task):
+                        self.testD.move_task.cancel()
+                    if (direction == 0):
+                        self.testD.move_task = None
+                    else:
+                        self.testD.move_task = asyncio.create_task( self.testD.move_loop(direction) )
 
     
     async def start_countdown(self):
@@ -138,7 +142,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.update_ball_position()
             self.collisions(self.ball, self.testG, self.testD)
             await self.send_game_state()
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.01)
 
     def collisions(self ,ball, leftPad, rightPad):
         #print("2222")
@@ -153,14 +157,14 @@ class PongConsumer(AsyncWebsocketConsumer):
                     ball.xSpeed *= -1
                     if ball.xSpeed < 8.1 :
                         ball.xSpeed += 0.05
-                    print(ball.xSpeed)
+                    # print(ball.xSpeed)
                     midPad = leftPad.y + leftPad.height / 2
                     diff = midPad - ball.y
                     reduc = (leftPad.height / 2) / ball.maxSpeed
                     ball.ySpeed = diff / reduc
         elif ball.xSpeed > 0 :
             #print("333")
-            print(ball.y, rightPad.y)
+            # print(ball.y, rightPad.y)
             if ball.y >= rightPad.y and ball.y <= rightPad.y + rightPad.height:
                 #print("4")
                 if ball.x + ball.rad >= rightPad.x :
