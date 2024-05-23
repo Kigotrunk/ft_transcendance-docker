@@ -51,6 +51,7 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
+            console.log(data);
             if ('player' in data) {
                 player = data['player'];
             } else if ('countdown' in data) {
@@ -70,7 +71,6 @@
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
-
         document.addEventListener('keydown', function(event) {
             if (!gameStarted) return;
 
@@ -107,6 +107,7 @@
             }));
         }
 
+        
         function updateGameState(gameState) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBall(gameState.ball_position);
@@ -114,7 +115,16 @@
             drawPaddle(gameState.paddle2_position, canvas.width - 20);
             scoreDiv.innerText = `${gameState.score[0]} - ${gameState.score[1]}`;
         }
-
+       
+    /*    
+        function updateGameState(gameState) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall(gameState.ball_position);
+        ctx.fillRect(0, gameState.paddle1_position + 40, 10, 80);
+        ctx.fillRect(790, gameState.paddle2_position + 40, 10, 80);
+        scoreDiv.innerText = ${gameState.score[0]} - ${gameState.score[1]};
+    }
+    */
         function drawBall(position) {
             ctx.beginPath();
             ctx.arc(position[0] * 8, position[1] * 6, 10, 0, Math.PI * 2);

@@ -1,16 +1,17 @@
+const content = document.querySelector('.content');
+
 function fetchRooms() {
 	// Simulate API call to fetch room list
 	return ['room1', 'room2', 'room3'];
 }
 
 function displayRooms() {
-	const content = document.querySelector('.content');
 	content.innerHTML = `
 		<h1>Select a Room</h1>
 		<ul id="room-list"></ul>
 		<input id="room-name-input" type="text" placeholder="Room name">
 		<button onclick="createRoom()">Create Room</button>
-		<button onclick="joinLocal()">Local Mode</button>
+		<button onclick="versusAi()">AI Mode</button>
 	`;
 
 	const rooms = fetchRooms();
@@ -31,22 +32,51 @@ function createRoom() {
 	}
 }
 
-function joinLocal() {
-	window.location.href = `/game/local/`;
+function versusAi() {
+	content.innerHTML = `
+		<div id="game-container">
+			<div id="score">Connecting...</div>
+			<canvas id="pongCanvas" width="600" height="600"></canvas>
+		</div>
+	`;
+
+	const socket = new WebSocket('ws://' + window.location.host + `/ws/pong/ai/`);
+
+	socket.onmessage = function(e) {
+		const data = JSON.parse(e.data);
+		console.log(data);
+	};
+
+	socket.onopen = function(e) {
+		socket.send(JSON.stringify({ 'message': 'join' }));
+	}
+
+	const testButton = document.createElement('button');
+	testButton.innerHTML = 'test'
+	testButton.onclick = function() {
+		console.log('send');
+		socket.send(JSON.stringify({
+			'message': 'hello'
+		}));
+	};
+	content.appendChild(testButton);
 }
 
 
-//////////////////////////////
+///////////////		GAME	///////////////
 
+const height = 600;
+const width = 800;
+const padLenght = 50;
+const ballRadius = 5;
 
 const joinRoom = (roomName) => {
-	const content = document.querySelector('.content');
 	content.innerHTML = `
 		<div id="game-container">
 			<div id="score">Waiting for players...</div>
-			<canvas id="pongCanvas" width="600" height="600"></canvas>
+			<canvas id="pongCanvas" width="${width}" height="${height}"></canvas>
 		</div>
-	`
+	`;
 	const canvas = document.getElementById('pongCanvas');
 	const ctx = canvas.getContext('2d');
 	ctx.fillStyle = "white";
@@ -55,11 +85,11 @@ const joinRoom = (roomName) => {
 	let localMode = roomName === 'local';
 	let gameStarted = false;
 
-	const chatSocket = new WebSocket(
+	const socket = new WebSocket(
 		'ws://' + window.location.host + `/ws/pong/${roomName}/`
 	);
 
-	chatSocket.onmessage = function(e) {
+	socket.onmessage = function(e) {
 		const data = JSON.parse(e.data);
 		if ('player' in data) {
 			player = data['player'];
@@ -77,62 +107,60 @@ const joinRoom = (roomName) => {
 		}
 	};
 
-	chatSocket.onclose = function(e) {
+	socket.onclose = function(e) {
 		console.error('Chat socket closed unexpectedly');
 	};
+	
+	let up = false;
+	let down = false;
 
-	document.addEventListener('keydown', function(event) {
-		if (!gameStarted) return;
-
-		if (localMode) {
-			// Local mode controls
-			if (event.key === 'w' || event.key === 'W') {
-				movePaddle('left', -5);
-			} else if (event.key === 's' || event.key === 'S') {
-				movePaddle('left', 5);
-			} else if (event.key === 'ArrowUp') {
-				movePaddle('right', -5);
-			} else if (event.key === 'ArrowDown') {
-				movePaddle('right', 5);
-			}
-		} else {
-			// Online mode controls
-			if (event.key === 'ArrowUp') {
-				movePaddle(player, -5);
-			}
-			else if (event.key === 'ArrowDown') {
-				movePaddle(player, 5);
-			}
-		}
-	});
-
-	function movePaddle(player, delta) {
-		chatSocket.send(JSON.stringify({
+    function sendInput(dir) {
+		if (!gameStarted)
+			return;
+        socket.send(JSON.stringify({
 			'action': 'move',
 			'player': player,
-			'delta': delta
+			'direction': dir,
 		}));
 	}
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowUp' && up === false) {
+            up = true;
+			sendInput(up - down);
+        }
+		else if (event.key === 'ArrowDown' && down === false) {
+            down = true;
+			sendInput(up - down);
+        }
+    });
+
+    document.addEventListener('keyup', (event) => {
+		if (event.key === 'ArrowUp') {
+            up = false;
+			sendInput(up - down);
+        }
+		else if (event.key === 'ArrowDown') {
+            down = false;
+			sendInput(up - down);
+        }
+    });
 
 	function updateGameState(gameState) {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		drawBall(gameState.ball_position);
-		drawPaddle(gameState.paddle1_position, 10);
-		drawPaddle(gameState.paddle2_position, canvas.width - 20);
+		ctx.fillRect(0, gameState.paddle1_position, 10, 80);
+		ctx.fillRect(790, gameState.paddle2_position, 10, 80);
 		scoreDiv.innerText = `${gameState.score[0]} - ${gameState.score[1]}`;
 	}
 
 	function drawBall(position) {
 		ctx.beginPath();
-		ctx.arc(position[0] * 6, position[1] * 6, 10, 0, Math.PI * 2);
+		ctx.arc(position[0], position[1], 10, 0, Math.PI * 2);
 		ctx.fill();
 	}
 
-	function drawPaddle(position, x) {
-		ctx.fillRect(x, position * 6 - 40, 10, 80);
-	}
-
-	chatSocket.onopen = function(e) {
-		chatSocket.send(JSON.stringify({ 'action': 'join' }));
+	socket.onopen = function(e) {
+		socket.send(JSON.stringify({ 'action': 'join' }));
 	}
 }

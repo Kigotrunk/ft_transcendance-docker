@@ -110,3 +110,69 @@ class algorithm(models.Model) :
         if rng == self.data[3] - 1 :
             return True
 """
+
+class   pad:
+
+    speed = 1
+    def __init__(self, x, y, width, height, bal, diff, playerPad) :
+
+        self.x = self.ogX = x
+        self.y = self.ogY = y
+        self.width = width
+        self.height = height
+        self.travelTime = 0
+        #self.algorithm = algorithm(bal, self, diff, playerPad)
+
+
+    def sprite(self, win, color):
+
+        pygame.draw.rect(win, color, (self.x, self.y, self.width, self.height))
+
+    def move(self, up = True):
+
+        if up:
+            if self.y > 0 :
+                self.y -= 10
+        else:
+            if self.y < 520 :
+                self.y += 10
+
+    def reset(self):
+
+        self.x = self.ogX
+        self.y = self.ogY
+
+class   ball:
+
+    maxSpeed = 6
+
+    def __init__(self, x, y, rad):
+
+        self.x = self.ogX = x
+        self.y = self.ogY = y
+        self.rad = rad
+        self.xSpeed = self.maxSpeed
+        self.ySpeed = 0
+
+    def sprite(self, win, color):
+
+        pygame.draw.circle(win, color, (self.x, self.y), self.rad)
+
+    def move(self):
+
+        self.x += self.xSpeed
+        self.y += self.ySpeed
+
+    def reset(self):
+
+        self.x = self.ogX
+        self.y = self.ogY
+        #self.xSpeed = self.maxSpeed
+        if self.xSpeed > 5 :
+            self.xSpeed = 6
+        elif self.xSpeed < -5 :
+            self.xSpeed = -6
+        self.ySpeed = 0
+
+    def getxSpeed(self):
+        return self.xSpeed
