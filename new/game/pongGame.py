@@ -1,4 +1,4 @@
-from .models import ball, pad
+from .models import ball, pad, pad_ai, algorithm
 import asyncio
 
 class pongGame :
@@ -14,14 +14,19 @@ class pongGame :
         print("YO!")
         
         
-    async def launchGame(self) :
+    async def launchGame(self, mode, diff) :
         print("WESH")
         self.game_task = None
         self.ball = ball(400, 300, 10)
-        self.leftPad = pad(0, 260, 10, 80, ball, 2, None)
-        self.rightPad = pad(790, 260, 10, 80, ball, 2, self.leftPad)
-        self.score = [0, 0]
-        self.player_number = 2
+        self.mode = mode 
+        self.leftPad = pad(0, 260, 10, 80, self.ball, 2, None)
+        if mode == "Online" :
+            self.rightPad = pad(790, 260, 10, 80, self.ball, 2, self.leftPad)
+            self.player_number = 2
+        elif mode == "LM" :
+            #self.leftPad = pad_ai(0, 260, 10, 80, self.ball, 2, None)
+            self.rightPad = pad_ai(790, 260, 10, 80, self.ball, diff, self.leftPad)
+        self.score = [0, 0] 
         self.game_state = True
         self.game_task = asyncio.create_task(self.start_countdown())
 
@@ -32,7 +37,7 @@ class pongGame :
                 {
                     'type': 'countdown',
                     'countdown': i
-                }
+                } 
             )
             await asyncio.sleep(1)
         await self.pongConsumer.channel_layer.group_send(
@@ -57,10 +62,16 @@ class pongGame :
             #self.update_ball_position()
             #print("1")
             self.ball.move()
-            #print("2")
-            self.leftPad.move()
-            #print("3")
-            self.rightPad.move()
+            if self.mode == "Online":
+                self.leftPad.move()
+                self.rightPad.move()
+                print("2")
+            elif self.mode == "LM": 
+                print("3")
+                self.leftPad.move()
+                self.pve()
+            #print(self.ball.x)
+            #print(self.rightPad.x)
             #print("4")
             self.update_ball_position()
             #print("5")
@@ -92,6 +103,28 @@ class pongGame :
                     diff = midPad - ball.y
                     reduc = (leftPad.height / 2) / ball.maxSpeed
                     ball.ySpeed = diff / reduc
+
+    def     pve(self) :
+        if self.ball.xSpeed > 0 :
+            #if self.rightPad.algorithm.diff == 4 :
+                #self.rightPad.algorithm.hitHeight = self.ball.x
+            if self.rightPad.algorithm.replace == 1 :
+                self.rightPad.algorithm.hitHeight = 350
+            elif self.rightPad.algorithm.replace == 2 :
+                self.rightPad.algorithm.hitHeight = 250
+            else :
+                if self.rightPad.y + self.rightPad.speed + self.rightPad.height <= 600  and self.rightPad.algorithm.hitHeight >= self.rightPad.y + 60:
+                    self.rightPad.move(up = False)
+                elif self.rightPad.algorithm.hitHeight <= self.rightPad.y + 40  and self.rightPad.y - self.rightPad.speed >= 0:
+                    self.rightPad.move(up = True)
+            self.rightPad.algorithm.replace = 0
+        else :
+            if self.rightPad.algorithm.diff > 2 :
+                self.rightPad.algorithm.getReadyReplace(self.ball, self.rightPad)
+        #if key[pygame.K_z] and leftPad.y - leftPad.speed >= 0 :
+            #leftPad.move(up = True)
+        #if key[pygame.K_s] and leftPad.y + leftPad.speed + leftPad.height <= winHeight :
+            #leftPad.move(up = False)
 
     def update_ball_position(self):
         if self.ball.x <= 0:

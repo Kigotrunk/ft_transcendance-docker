@@ -60,10 +60,28 @@ class PongConsumer(AsyncWebsocketConsumer):
                             self.channel_name
                         )
                         self.player_side = 'right'
-                        await self.room.launchGame()
+                        await self.room.launchGame("Online")
             elif mode == 'ai':
+                self.diff = data.get('room')
+                print(self.diff)
+                self.room_name = "ai"
+                print(text_data)
+                i = 0
+                while getGame(self.room_name) != None :
+                    self.room_name = str(i) + "ai"
+                    print(self.room_name)
+                    i +=1
+                self.room_group_name = f"game_{self.room_name}"
+                await self.channel_layer.group_add(
+                    self.room_group_name,
+                    self.channel_name
+                )
+                self.player_side = 'left'
+                self.room = pongGame(self.room_name, self)
+                setGame(self.room_name, self.room)
+                await self.room.launchGame("LM", self.diff)
                 #ia room
-                pass
+                #pass
         elif action == 'move':
             if self.room and self.room.game_state == True :
                 direction = data.get('direction')
