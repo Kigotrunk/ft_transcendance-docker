@@ -38,6 +38,10 @@ class algorithm() :
             #self.previousShot = self.hitHeight
             self.rng = 7
             self.unlucky = -1
+            if self.diff == 4 :
+                self.surv_score = 0
+                self.thd_surv_score = threading.Thread(target=self.monitoring_score_survival, args=(), daemon=True)
+                self.thd_surv_score.start()
             print("constructeur vide")
 
     def getThread():
@@ -109,7 +113,18 @@ class algorithm() :
         #print("AAA")
     
     #def yoyoyo(self, ball, playerPad, rightPad)
+    def monitoring_score_survival(self) :
+        while True:
+            self.surv_score += 1
+            time.sleep(0.1)
 
+
+
+    def monitoringIaView(self, ball, Pad) :
+        while True :
+            self.hitHeight = self.getLandingPlace(ball, Pad)
+            time.sleep(0.6)
+            
     def whereSmartShot(self, playerPad, rightPad, ball) :
         negativHH = (((ball.x - ball.rad) - playerPad.x) / ball.xSpeed) * ball.ySpeed
         #print( "negHH: ", negativHH)
@@ -206,11 +221,7 @@ class algorithm() :
     def result():
         print("A")
     
-    def monitoringIaView(self, ball, Pad) :
-        while True :
-            self.hitHeight = self.getLandingPlace(ball, Pad)
-            time.sleep(0.6)
-            
+
         #thd.join()
 
     def loosingMove(self) :
@@ -330,7 +341,7 @@ class   pad:
 
 class   pad_ai:
 
-    speed = 5
+    speed = 4
     move_task = None
 
     def __init__(self, x, y, width, height, bal, diff, playerPad) :
