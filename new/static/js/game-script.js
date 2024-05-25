@@ -30,9 +30,14 @@ function displayRooms() {
 	pongMenu.appendChild(button1);
 
 	const button2 = document.createElement('button');
-	button2.innerHTML = 'Ai Mode';
-	button2.onclick = () => versusAi(socket);
+	button2.innerHTML = 'Play with a friend';
+	button2.onclick = () => selectRoom(socket);
 	pongMenu.appendChild(button2);
+
+	const button3 = document.createElement('button');
+	button3.innerHTML = 'Ai Mode';
+	button3.onclick = () => versusAi(socket);
+	pongMenu.appendChild(button3);
 
 	socket.onmessage = function(e) {
 		const data = JSON.parse(e.data);
@@ -133,7 +138,35 @@ function versusAi(socket) {
 	pongMenu.appendChild(button4);
 }
 
+function selectRoom (socket) {
+	const pongMenu = document.getElementById('pong-menu');
+	pongMenu.innerHTML = '';
+
+	const button1 = document.createElement('button');
+	button1.innerHTML = 'test 1';
+	button1.onclick = () => joinRoom(socket, 'pvp', 'test 1');
+	pongMenu.appendChild(button1);
+
+	const button2 = document.createElement('button');
+	button2.innerHTML = 'test 2';
+	button2.onclick = () => joinRoom(socket, 'pvp', 'test 2');
+	pongMenu.appendChild(button2);
+
+	const input = document.createElement('input');
+	const sendButton = document.createElement('button');
+	input.addEventListener('keydown', (event) => {
+		if (event.key === 'Enter') {
+			joinRoom(socket, 'pvp', input.value);
+		}
+	});
+	sendButton.innerHTML = '<span class="material-icons">send</span>';
+	sendButton.onclick = () => joinRoom(socket, 'pvp', input.value);
+	pongMenu.appendChild(input);
+	pongMenu.appendChild(sendButton);
+}
+
 function joinRoom(socket, mode, roomName) {
+	console.log(`join in ${mode} room : ${roomName}`);
 	socket.send(JSON.stringify({
 		'action': 'join',
 		'mode': mode,
