@@ -1,99 +1,42 @@
-const content = document.querySelector('.content');
+const height = 600;
+const width = 800;
 
-function fetchRooms() {
-	// Simulate API call to fetch room list
-	return ['room1', 'room2', 'room3'];
-}
+const content = document.querySelector('.content');
 
 function displayRooms() {
 	content.innerHTML = `
-		<h1>Select a Room</h1>
-		<ul id="room-list"></ul>
-		<input id="room-name-input" type="text" placeholder="Room name">
-		<button onclick="createRoom()">Create Room</button>
-		<button onclick="versusAi()">AI Mode</button>
-	`;
-
-	const rooms = fetchRooms();
-	const roomList = document.getElementById('room-list');
-	roomList.innerHTML = '';
-	rooms.forEach(room => {
-		const li = document.createElement('li');
-		li.textContent = room;
-		li.onclick = () => joinRoom(room);
-		roomList.appendChild(li);
-	});
-}
-
-function createRoom() {
-	const roomName = document.getElementById('room-name-input').value;
-	if (roomName) {
-		joinRoom(roomName);
-	}
-}
-
-function versusAi() {
-	content.innerHTML = `
 		<div id="game-container">
-			<div id="score">Connecting...</div>
-			<canvas id="pongCanvas" width="600" height="600"></canvas>
-		</div>
-	`;
-
-	const socket = new WebSocket('ws://' + window.location.host + `/ws/pong/ai/`);
-
-	socket.onmessage = function(e) {
-		const data = JSON.parse(e.data);
-		console.log(data);
-	};
-
-	socket.onopen = function(e) {
-		socket.send(JSON.stringify({ 'message': 'join' }));
-	}
-
-	const testButton = document.createElement('button');
-	testButton.innerHTML = 'test'
-	testButton.onclick = function() {
-		console.log('send');
-		socket.send(JSON.stringify({
-			'message': 'hello'
-		}));
-	};
-	content.appendChild(testButton);
-}
-
-
-///////////////		GAME	///////////////
-
-const height = 600;
-const width = 800;
-const padLenght = 50;
-const ballRadius = 5;
-
-const joinRoom = (roomName) => {
-	content.innerHTML = `
-		<div id="game-container">
-			<div id="score">Waiting for players...</div>
+			<div id="score"></div>
 			<canvas id="pongCanvas" width="${width}" height="${height}"></canvas>
+			<div id="pong-menu"></div>
 		</div>
 	`;
+
+	const socket = new WebSocket(
+		'ws://' + window.location.host + `/ws/pong/`
+	);
+
 	const canvas = document.getElementById('pongCanvas');
 	const ctx = canvas.getContext('2d');
 	ctx.fillStyle = "white";
 	const scoreDiv = document.getElementById('score');
-	let player = null;
-	let localMode = roomName === 'local';
 	let gameStarted = false;
 
-	const socket = new WebSocket(
-		'ws://' + window.location.host + `/ws/pong/${roomName}/`
-	);
+	const pongMenu = document.getElementById('pong-menu');
+
+	const button1 = document.createElement('button');
+	button1.innerHTML = 'Play Online';
+	button1.onclick = () => joinRoom(socket, 'pvp', 'room1'); // (ajouter matchmaking / jouer avec ami)
+	pongMenu.appendChild(button1);
+
+	const button2 = document.createElement('button');
+	button2.innerHTML = 'Ai Mode';
+	button2.onclick = () => versusAi(socket);
+	pongMenu.appendChild(button2);
 
 	socket.onmessage = function(e) {
 		const data = JSON.parse(e.data);
-		if ('player' in data) {
-			player = data['player'];
-		} else if ('countdown' in data) {
+		if ('countdown' in data) {
 			scoreDiv.innerText = data['countdown'];
 			if (data['countdown'] === "") {
 				gameStarted = true;
@@ -119,7 +62,6 @@ const joinRoom = (roomName) => {
 			return;
         socket.send(JSON.stringify({
 			'action': 'move',
-			'player': player,
 			'direction': dir,
 		}));
 	}
@@ -160,7 +102,42 @@ const joinRoom = (roomName) => {
 		ctx.fill();
 	}
 
-	socket.onopen = function(e) {
-		socket.send(JSON.stringify({ 'action': 'join' }));
-	}
+	window.addEventListener('blur', function() {
+		sendInput(0);
+	});
+}
+
+
+function versusAi(socket) {
+	const pongMenu = document.getElementById('pong-menu');
+	pongMenu.innerHTML = '';
+
+	const button1 = document.createElement('button');
+	button1.innerHTML = 'Easy';
+	button1.onclick = () => joinRoom(socket, 'ai', 1);
+	pongMenu.appendChild(button1);
+
+	const button2 = document.createElement('button');
+	button2.innerHTML = 'Medium';
+	button2.onclick = () => joinRoom(socket, 'ai', 2);
+	pongMenu.appendChild(button2);
+
+	const button3 = document.createElement('button');
+	button3.innerHTML = 'Hard';
+	button3.onclick = () => joinRoom(socket, 'ai', 3);
+	pongMenu.appendChild(button3);
+
+	const button4 = document.createElement('button');
+	button4.innerHTML = 'Survival';
+	button4.onclick = () => joinRoom(socket, 'ai', 4);
+	pongMenu.appendChild(button4);
+}
+
+function joinRoom(socket, mode, roomName) {
+	socket.send(JSON.stringify({
+		'action': 'join',
+		'mode': mode,
+		'room': roomName
+	}));
+	document.getElementById('pong-menu').innerHTML = '';
 }

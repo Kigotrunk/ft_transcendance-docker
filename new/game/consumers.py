@@ -13,29 +13,9 @@ from .pongGame import pongGame
 
 class PongConsumer(AsyncWebsocketConsumer):
 
-    players = {}
     async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room = getGame(self.room_name)
-        self.room_group_name = f"game_{self.room_name}"
-        if self.room == None:
-            await self.accept()
-            await self.channel_layer.group_add(
-                self.room_group_name,
-                self.channel_name
-            )
-            self.player_side = 'left'
-            self.room = pongGame(self.room_name, self)
-            setGame(self.room_name, self.room)
-        else :
-            if self.room.player_number == 1:
-                await self.accept()
-                await self.channel_layer.group_add(
-                    self.room_group_name,
-                    self.channel_name
-                )
-                self.player_side = 'right'
-                await self.room.launchGame()
+        await self.accept()
+        
     
     async def disconnect(self, close_code):
 
@@ -56,20 +36,45 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
 
-        # print(text_data)
-        if self.room and self.room.game_state == True :
-            if 'action' in data:
-                action = data['action']
-                if action == 'move':
-                    direction = data.get('direction')
-                    #print(direction)
-                    #player = PongConsumer.players[self.channel_name]['player_side']
-                    #player = data.get('player')
-                    #player = self.side
-                    if self.player_side == 'left':
-                        self.room.leftPad.direction = direction
-                    elif self.player_side == 'right':
-                        self.room.rightPad.direction = direction
+        print(text_data)
+        
+        action = data.get('action')
+        if action == 'join':
+            mode = data.get('mode')
+            if mode == 'pvp':
+                self.room_name = 'test'
+                self.room = getGame(self.room_name)
+                self.room_group_name = f"game_{self.room_name}"
+                if self.room == None:
+                    await self.channel_layer.group_add(
+                        self.room_group_name,
+                        self.channel_name
+                    )
+                    self.player_side = 'left'
+                    self.room = pongGame(self.room_name, self)
+                    setGame(self.room_name, self.room)
+                else :
+                    if self.room.player_number == 1:
+                        await self.channel_layer.group_add(
+                            self.room_group_name,
+                            self.channel_name
+                        )
+                        self.player_side = 'right'
+                        await self.room.launchGame()
+            elif mode == 'ai':
+                #ia room
+                pass
+        elif action == 'move':
+            if self.room and self.room.game_state == True :
+                direction = data.get('direction')
+                #print(direction)
+                #player = PongConsumer.players[self.channel_name]['player_side']
+                #player = data.get('player')
+                #player = self.side
+                if self.player_side == 'left':
+                    self.room.leftPad.direction = direction
+                elif self.player_side == 'right':
+                    self.room.rightPad.direction = direction
                         
 
     async def game_state(self, event):
