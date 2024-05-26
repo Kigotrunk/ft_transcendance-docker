@@ -38,11 +38,14 @@ class algorithm() :
             #self.previousShot = self.hitHeight
             self.rng = 7
             self.unlucky = -1
+            self.dedge = False
             if self.diff == 4 :
                 self.surv_score = 0
                 self.thd_surv_score = threading.Thread(target=self.monitoring_score_survival, args=(), daemon=True)
                 self.thd_surv_score.start()
             print("constructeur vide")
+            #self.thd.join()
+
 
     def getThread():
         return self.thd
@@ -91,7 +94,6 @@ class algorithm() :
         elif self.diff == 4 :
             self.rng = 100
             self.unlucky = randint(0, self.rng)
-            print(hitHeight)
             if hitHeight > 600 - ball.rad:
                 hitHeight =  600 - ball.rad - (hitHeight - 600 - ball.rad)
             elif hitHeight < 0 + ball.rad:
@@ -117,6 +119,8 @@ class algorithm() :
         while True:
             self.surv_score += 1
             time.sleep(0.1)
+            if self.dedge == True :
+                return
 
 
 
@@ -124,6 +128,8 @@ class algorithm() :
         while True :
             self.hitHeight = self.getLandingPlace(ball, Pad)
             time.sleep(0.6)
+            if self.dedge == True :
+                return
             
     def whereSmartShot(self, playerPad, rightPad, ball) :
         negativHH = (((ball.x - ball.rad) - playerPad.x) / ball.xSpeed) * ball.ySpeed
@@ -301,6 +307,7 @@ class   pad:
     speed = 4
     move_task = None
 
+        
     def __init__(self, x, y, width, height, bal, diff, playerPad) :
 
         self.x = self.ogX = x
@@ -310,7 +317,6 @@ class   pad:
         self.travelTime = 0
         self.direction = 0
         #self.algorithm = algorithm(bal, self, diff, playerPad)
-
 
     def sprite(self, win, color):
 
@@ -353,7 +359,6 @@ class   pad_ai:
         self.travelTime = 0
         self.direction = 0
         self.algorithm = algorithm(bal, self, diff, playerPad)
-
 
     def sprite(self, win, color):
 

@@ -100,7 +100,14 @@ class pongGame :
             await self.send_game_state()
             await asyncio.sleep(0.01)
             if self.game_over == True:
-                time.sleep(0.3)
+                #time.sleep(0.3)
+                del self.ball
+                if self.mode == "LM":
+                    print("A")
+                    self.rightPad.algorithm.dedge = True
+                    del self.rightPad.algorithm
+                del self.leftPad
+                del self.rightPad
                 del self
 
     def collisions(self ,ball, leftPad, rightPad):
@@ -174,7 +181,7 @@ class pongGame :
                 'paddle1_position': (self.leftPad.y),
                 'paddle2_position': (self.rightPad.y),
                 'surv_score': (self.rightPad.algorithm.surv_score),
-                'game_over': (self.game_state)
+                'game_over': (self.game_over)
             }
         else :
             game_state = {
@@ -182,7 +189,7 @@ class pongGame :
                 'paddle1_position': (self.leftPad.y),
                 'paddle2_position': (self.rightPad.y),
                 'score': self.score,
-                'game_over': (self.game_state)
+                'game_over': (self.game_over)
             }
         #print(self.leftPad.y)
         #print(game_state)
