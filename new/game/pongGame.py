@@ -100,15 +100,13 @@ class pongGame :
             await self.send_game_state()
             await asyncio.sleep(0.01)
             if self.game_over == True:
-                #time.sleep(0.3)
                 del self.ball
                 if self.mode == "LM":
-                    print("A")
                     self.rightPad.algorithm.dedge = True
                     del self.rightPad.algorithm
                 del self.leftPad
                 del self.rightPad
-                del self
+                #del self 
 
     def collisions(self ,ball, leftPad, rightPad):
         if (ball.y + ball.rad >= 600) or (ball.y - ball.rad <= 0) :
@@ -119,6 +117,7 @@ class pongGame :
                     ball.xSpeed *= -1
                     if ball.xSpeed < 8.1 :
                         ball.xSpeed += 0.05
+                    print(ball.xSpeed)
                     midPad = leftPad.y + leftPad.height / 2
                     diff = midPad - ball.y
                     reduc = (leftPad.height / 2) / ball.maxSpeed
@@ -128,7 +127,8 @@ class pongGame :
                 if ball.x + ball.rad >= rightPad.x :
                     ball.xSpeed *= -1
                     if ball.xSpeed > -8.1 :
-                        ball.xSpeed += -0.05
+                        ball.xSpeed += -0.05 
+                    print(ball.xSpeed)
                     midPad = rightPad.y + rightPad.height / 2
                     diff = midPad - ball.y
                     reduc = (leftPad.height / 2) / ball.maxSpeed
@@ -151,18 +151,18 @@ class pongGame :
         else :
             if self.rightPad.algorithm.diff > 2 :
                 self.rightPad.algorithm.getReadyReplace(self.ball, self.rightPad)
-        #if key[pygame.K_z] and leftPad.y - leftPad.speed >= 0 :
-            #leftPad.move(up = True)
-        #if key[pygame.K_s] and leftPad.y + leftPad.speed + leftPad.height <= winHeight :
-            #leftPad.move(up = False)
 
     def update_ball_position(self):
         if self.ball.x <= 0:
             self.score[1] += 1
             self.reset_all()
+            if self.mode == "ai" :
+                self.rightPad.algorithm.hitHeight = 300
         if self.ball.x >= 800:
             self.score[0] += 1
             self.reset_all()
+            if self.mode == "ai" : 
+                self.rightPad.algorithm.hitHeight = 300
             if self.diff == 4:
                 self.rightPad.algorithm.surv_score += 500
                 print(self.rightPad.algorithm.surv_score)

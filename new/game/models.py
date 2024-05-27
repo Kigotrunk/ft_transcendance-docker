@@ -64,31 +64,39 @@ class algorithm() :
         #if self.playerPad != None :
             #print(self.playerPad.y)
         if self.diff == 1:
-            rF = random.uniform(0.9, 1.1)
-            hitHeight *=rF
+            rF = random.uniform(0.90, 1.10)
+            rF *= 600
+            rF -= 600
+            print(rF)
+            hitHeight +=rF
             self.rng = 7
             self.unlucky = randint(0, self.rng)
             hitHeight += self.chooseAction(hitHeight, self.playerPad)
         elif self.diff == 2:
-            rF = random.uniform(0.92, 1.08)
+            rF = random.uniform(0.91, 1.09)
+            rF *= 600
+            rF -= 600
             if hitHeight > 600 - ball.rad:
-                hitHeight *= rF
+                hitHeight += rF
                 hitHeight =  600 - ball.rad - (hitHeight - 600 - ball.rad)
             elif hitHeight < 0 + ball.rad:
-                hitHeight *= rF
+                hitHeight += rF
                 hitHeight = sqrt((hitHeight - ball.rad) * (hitHeight - ball.rad))
-            self.rng = 12
+            self.rng = 15
             self.unlucky = randint(0, self.rng)
+            print("PREACTION", hitHeight)
             hitHeight += self.chooseAction(hitHeight, self.playerPad)
         elif self.diff == 3 :
-            rF = random.uniform(0.95, 1.05)
-            self.rng = 20
+            rF = random.uniform(0.92, 1.08)
+            rF *= 600
+            rF -= 600
+            self.rng = 22
             self.unlucky = randint(0, self.rng)
             if hitHeight > 600 - ball.rad:
-                hitHeight *= rF
+                hitHeight += rF
                 hitHeight =  600 - ball.rad - (hitHeight - 600 - ball.rad)
             elif hitHeight < 0 + ball.rad:
-                hitHeight *= rF
+                hitHeight += rF
                 hitHeight = sqrt((hitHeight - ball.rad) * (hitHeight - ball.rad))
             hitHeight += self.chooseAction(hitHeight, self.playerPad)
         elif self.diff == 4 :
@@ -105,7 +113,7 @@ class algorithm() :
             #hitHeight = ball.x
         
             #changer pour Calculer les rebons a l'avance#
-        #print(hitHeight)
+        print(hitHeight)
         #print("Pre SMARTSHOT : ",hitHeight)
         #hitHeight += self.smartShot(ball, Pad.algorithm.playerPad, Pad)
         #print("Post SMARTSHOT : ",hitHeight)
@@ -224,18 +232,15 @@ class algorithm() :
                 self.data[2] -= 2
                 if self.data[2] < 9 :
                     self.data[5] = False
-    def result():
-        print("A")
-    
 
-        #thd.join()
 
     def loosingMove(self) :
         tmp = randint(0,1)
+        print("Cheh")
         if tmp == 1 :
-            return 60
+            return 20
         elif tmp == 0 :
-            return -60
+            return -20
     
     def chooseAction(self, hitHeight, playerPad) :
         tmp = 0
@@ -405,9 +410,9 @@ class   ball:
         self.y = self.ogY
         #self.xSpeed = self.maxSpeed
         if self.xSpeed > 5 :
-            self.xSpeed = 6
+            self.xSpeed = 5
         elif self.xSpeed < -5 :
-            self.xSpeed = -6
+            self.xSpeed = -5
         self.ySpeed = 0
 
     def getxSpeed(self):
