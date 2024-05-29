@@ -1,8 +1,7 @@
-.content {
+.chat-content {
 	display: flex;
 	flex-direction: row;
     height: calc(100vh - 80px);
-	flex-grow: 1;
 }
 
 .chat-list {
@@ -54,8 +53,15 @@
     color: white;
 }
 
+.chat-right-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
 .talk {
-    width: 80%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     overflow-y: auto;

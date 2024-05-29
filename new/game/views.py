@@ -1,6 +1,3 @@
-from asgiref.sync import async_to_sync
-from django.shortcuts import render
-from .models import pad, ball
 
 fps = 60
 score  = 10
@@ -37,20 +34,10 @@ def     pve(ball, rightPad, leftPad, key, winHeight) :
             leftPad.move(up = False)
 """
 
-def lobby(request):
-    return render(request, "game/game.html")
+from django.shortcuts import render
 
-def room(request, room_name):
+def rooms(request):
+    return render(request, 'rooms.html')
 
-    channel_layer = channel_layer.get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        "game_room_name",  # Nom du groupe WebSocket où les clients sont connectés
-        {
-            "type": "room",
-            "ball_x": winWidth // 2,
-            "ball_y": winHeight // 2,
-            "left_pad_y": winHeight // 2 - padHeight // 2,
-            "right_pad_y": winHeight // 2 - padHeight // 2,
-        }
-    )
-    return render(request, "game/room.html", {"room_name": room_name})
+def game(request, room_name):
+    return render(request, 'game.html', {'room_name': room_name})

@@ -1,32 +1,53 @@
 import json
+import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
-from asgiref.sync import sync_to_async
-from .models import ball, pad  # Supposons que vous avez un modèle pour stocker l'état du jeu
+from .models import ball, pad
+from .globals import setGame, getGame, removeGame
+from .pongGame import pongGame
 
-class player(AsyncWebsocketConsumer):
-    
-    padWidth = 20 # à redefinir
-    padHeight = 100 # à redefinir
-    winWidth = 800 # à redefinir
-    winHeight = 600 # à redefinir
-    
-    orb = ball(None, None, None)
-    leftPad = pad(None, None, None, None, None, None)
-    rightPad = pad(None, None, None, None, None, None)
-    
+#Disconnect devra pas detruire lors que launch game est lancer.
+#Si il n'a pas ete launch_game DETRUIRE la pong game avec Remove(game)
+#si Receive Check if Game started !
+#DES MUTEX SA MERE A chaque requete (Si 2 joueurs join la meme room vide en meme temps || si 2 joueurs join room avec 1 joueur dedans etc...)
+
+
+class PongConsumer(AsyncWebsocketConsumer):
+
+    players = {}
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = 'game_%s' % self.room_name
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
-        await self.accept()
-        await self.start_sending_game_state()
-
+        self.room = getGame(self.room_name)
+        self.room_group_name = f"game_{self.room_name}"
+        if self.room == None:
+            await self.accept()
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name
+            )
+            self.player_side = 'left'
+            self.room = pongGame(self.room_name, self)
+            setGame(self.room_name, self.room)
+        else :
+            if self.room.player_number == 1:
+                await self.accept()
+                await self.channel_layer.group_add(
+                    self.room_group_name,
+                    self.channel_name
+                )
+                self.player_side = 'right'
+                await self.room.launchGame()
+    
     async def disconnect(self, close_code):
 
-        await self.stop_sending_game_state()
+    # print("disconnect !")
+        #if self.channel_name in PongConsumer.players:
+        #    del PongConsumer.players[self.channel_name]
+        
+        #players_count = sum(1 for player in PongConsumer.players.values() if player['room_name'] == self.room_name)
+        
+        #if players_count < 2:
+        #    self.game_task.cancel()
+
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -34,69 +55,30 @@ class player(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message_type = data['type']
-        
-        if message_type == 'z' and self.leftPad.y - self.leftPad.speed:
-            self.leftPad.move(up = True)
-        if message_type == 's' and self.leftPad.y + self.leftPad.speed + self.leftPad.height <= self.winHeight :
-            self.leftPad.move(up = False)
-        if message_type == 'UP' and self.rightPad.y - self.rightPad.speed >= 0 :
-            self.rightPad.move(up = True)
-        if message_type == 'DOWN' and self.rightPad.y + self.rightPad.speed + self.rightPad.height <= self.winHeight :
-            self.rightPad.move(up = False)
 
-    async def send_game_state_update(self):
+        # print(text_data)
+        if self.room and self.room.game_state == True :
+            if 'action' in data:
+                action = data['action']
+                if action == 'move':
+                    direction = data.get('direction')
+                    #print(direction)
+                    #player = PongConsumer.players[self.channel_name]['player_side']
+                    #player = data.get('player')
+                    #player = self.side
+                    if self.player_side == 'left':
+                        self.room.leftPad.direction = direction
+                    elif self.player_side == 'right':
+                        self.room.rightPad.direction = direction
+                        
 
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'room',
-                'ball_x': self.orb.x,
-                'ball_y': self.orb.y,
-                'left_pad_y': self.leftPad.y,
-                'right_pad_y': self.rightPad.y
-            }
-        )
-    
-    def collisions(self, ball, leftPad, rightPad):
+    async def game_state(self, event):
+        game_state = event['game_state']
+        await self.send(text_data=json.dumps(game_state))
 
-        if (ball.y + ball.rad >= self.winHeight) or (ball.y - ball.rad <= 0) :
-            ball.ySpeed *= -1
-    
-        if ball.xSpeed < 0 :
-            if ball.y >= leftPad.y and ball.y <= leftPad.y + self.padHeight :
-                if ball.x - ball.rad <= leftPad.x + self.padWidth :
-                     ball.xSpeed *= -1
-                     midPad = leftPad.y + self.padHeight / 2
-                     diff = midPad - ball.y
-                     reduc = (leftPad.height / 2) / ball.maxSpeed
-                     ball.ySpeed = diff / reduc
- 
-        elif ball.xSpeed > 0 :
-            if ball.y >= rightPad.y and ball.y <= rightPad.y + self.padHeight :
-                if ball.x + ball.rad >= rightPad.x :
-                    ball.xSpeed *= -1
-                    midPad = rightPad.y + self.padHeight / 2
-                    diff = midPad - ball.y
-                    reduc = (leftPad.height / 2) / ball.maxSpeed
-                    ball.ySpeed = diff / reduc
+    async def countdown(self, event):
+        print("COUNTDOWN")
+        countdown = event['countdown']
+        await self.send(text_data=json.dumps({'countdown': countdown}))
 
-    async def game_state_update(self, event):
 
-        await self.send(text_data=json.dumps({
-            'type': 'room',
-            'ball_x': event['ball_x'],
-            'ball_y': event['ball_y'],
-            'left_pad_y': event['left_pad_y'],
-            'right_pad_y': event['right_pad_y']
-        }))
-
-    async def start_sending_game_state(self):
-        while True:
-            await self.orb.move()
-            await self.collisions()
-            await self.send_game_state_update()
-            await asyncio.sleep(0.1)
-
-    async def stop_sending_game_state(self):
-        pass
