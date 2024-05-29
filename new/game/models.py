@@ -7,10 +7,9 @@ import random
 from math import *
 
 
-""" 
 class algorithm() : 
     
-        Pythagor my friend
+            #Pythagor my friend
             #xd = ball.xSpeed * ball.xSpeed
             #pd = ball.ySpeed * ball.ySpeed
             #truc = sqrt(xd + pd)
@@ -27,7 +26,7 @@ class algorithm() :
                 #print("BOING INC", ball.y + ball.ySpeed)    
             #print("X", ball.x + ball.xSpeed)
             #self.actionTab = [self.loosingMove() ]
- 
+
     def __init__(self, ball, pad, diff, playerPad) :
             self.diff = diff
             self.replace = 0
@@ -39,7 +38,14 @@ class algorithm() :
             #self.previousShot = self.hitHeight
             self.rng = 7
             self.unlucky = -1
+            self.dedge = False
+            if self.diff == 4 :
+                self.surv_score = 0
+                self.thd_surv_score = threading.Thread(target=self.monitoring_score_survival, args=(), daemon=True)
+                self.thd_surv_score.start()
             print("constructeur vide")
+            #self.thd.join()
+
 
     def getThread():
         return self.thd
@@ -58,63 +64,41 @@ class algorithm() :
         #if self.playerPad != None :
             #print(self.playerPad.y)
         if self.diff == 1:
-            rF = random.uniform(0.9, 1.1)
-            #print("PRE RF", hitHeight)
-            hitHeight *=rF
-            #print("POST RF", hitHeight)
+            rF = random.uniform(0.90, 1.10)
+            rF *= 600
+            rF -= 600
+            print(rF)
+            hitHeight +=rF
             self.rng = 7
             self.unlucky = randint(0, self.rng)
             hitHeight += self.chooseAction(hitHeight, self.playerPad)
-            #print("POST UNLUCKY", hitHeight)
         elif self.diff == 2:
-            rF = random.uniform(0.88, 1.13)
+            rF = random.uniform(0.91, 1.09)
+            rF *= 600
+            rF -= 600
             if hitHeight > 600 - ball.rad:
-                hitHeight *= rF
+                hitHeight += rF
                 hitHeight =  600 - ball.rad - (hitHeight - 600 - ball.rad)
             elif hitHeight < 0 + ball.rad:
-                hitHeight *= rF
+                hitHeight += rF
                 hitHeight = sqrt((hitHeight - ball.rad) * (hitHeight - ball.rad))
-            self.rng = 9
+            self.rng = 15
             self.unlucky = randint(0, self.rng)
-            #hitHeight += self.chooseAction()
-            #self.actionTab(self.chooseAction())
-            #travelTime = (Pad.x - (ball.x + ball.rad)) / ball.xSpeed
-            #hitHeight = ball.y + ball.ySpeed * travelTime
-            #if hitHeight > 600 - ball.rad:
-            #    hitHeight =  600 - ball.rad - (hitHeight - 600 - ball.rad)
-            #elif hitHeight < 0 + ball.rad:
-            #    hitHeight = sqrt(hitHeight * hitHeight)
-            #rF = random.uniform(0.8, 1.2)
-            #print(rF)
-            #hitHeight *= 0.8
-            #print (hitHeight)
-        elif self.diff == 3 :
-            #self.getReadyReplace(ball, Pad)
-            #if self.playerPad != None :
-                #hitHeight = self.smartShot(ball, pad)
-            #travelTime = (Pad.x - (ball.x + ball.rad)) / ball.xSpeed
-            #hitHeight = ball.y + ball.ySpeed * travelTime
-            #if self.playerPad != None :
-                #return self.smartShot(ball, Pad, self.playerPad )
-            #print("HH Theorique", hitHeight)
-            rF = random.uniform(0.95, 1.05)
-            self.rng = 18
-            self.unlucky = randint(0, self.rng)
-            #print("PRE RF", hitHeight)
-            if hitHeight > 600 - ball.rad:
-                hitHeight *= rF
-                hitHeight =  600 - ball.rad - (hitHeight - 600 - ball.rad)
-            elif hitHeight < 0 + ball.rad:
-                hitHeight *= rF
-                hitHeight = sqrt((hitHeight - ball.rad) * (hitHeight - ball.rad))
-            print("HH post RF", hitHeight)
-            #print("HitHeight approx", hitHeight)
+            print("PREACTION", hitHeight)
             hitHeight += self.chooseAction(hitHeight, self.playerPad)
-            
-            print("HH post Cheh", hitHeight)
-            
-                #hitHeight += self.smartShot(ball, hitHeight, self.playerPad)
-            print("HH Post SmartShot()", hitHeight)
+        elif self.diff == 3 :
+            rF = random.uniform(0.92, 1.08)
+            rF *= 600
+            rF -= 600
+            self.rng = 22
+            self.unlucky = randint(0, self.rng)
+            if hitHeight > 600 - ball.rad:
+                hitHeight += rF
+                hitHeight =  600 - ball.rad - (hitHeight - 600 - ball.rad)
+            elif hitHeight < 0 + ball.rad:
+                hitHeight += rF
+                hitHeight = sqrt((hitHeight - ball.rad) * (hitHeight - ball.rad))
+            hitHeight += self.chooseAction(hitHeight, self.playerPad)
         elif self.diff == 4 :
             self.rng = 100
             self.unlucky = randint(0, self.rng)
@@ -129,7 +113,7 @@ class algorithm() :
             #hitHeight = ball.x
         
             #changer pour Calculer les rebons a l'avance#
-        #print(hitHeight)
+        print(hitHeight)
         #print("Pre SMARTSHOT : ",hitHeight)
         #hitHeight += self.smartShot(ball, Pad.algorithm.playerPad, Pad)
         #print("Post SMARTSHOT : ",hitHeight)
@@ -139,7 +123,22 @@ class algorithm() :
         #print("AAA")
     
     #def yoyoyo(self, ball, playerPad, rightPad)
+    def monitoring_score_survival(self) :
+        while True:
+            self.surv_score += 1
+            time.sleep(0.1)
+            if self.dedge == True :
+                return
 
+
+
+    def monitoringIaView(self, ball, Pad) :
+        while True :
+            self.hitHeight = self.getLandingPlace(ball, Pad)
+            time.sleep(0.6)
+            if self.dedge == True :
+                return
+            
     def whereSmartShot(self, playerPad, rightPad, ball) :
         negativHH = (((ball.x - ball.rad) - playerPad.x) / ball.xSpeed) * ball.ySpeed
         #print( "negHH: ", negativHH)
@@ -166,15 +165,15 @@ class algorithm() :
             if playerPad.y < 300 :
                 if playerPad.y < 200 :
                     if playerPad.y < 105 :
-                        return 28
-                    return 20
-                return 12
+                        return 24
+                    return 16
+                return 8
             elif playerPad.y > 300 :
                 if playerPad.y > 200 :
                     if playerPad.y > 100 :
-                        return -28
-                    return - 20
-                return -12
+                        return -24
+                    return - 16
+                return -8
         return 0
             #elif hitHeight < 400 and self.playerPad.y > 200 :
             #print("ICI")
@@ -233,29 +232,21 @@ class algorithm() :
                 self.data[2] -= 2
                 if self.data[2] < 9 :
                     self.data[5] = False
-    def result():
-        print("A")
-    
-    def monitoringIaView(self, ball, Pad) :
-        while True :
-            self.hitHeight = self.getLandingPlace(ball, Pad)
-            time.sleep(1)
-            
-        #thd.join()
+
 
     def loosingMove(self) :
         tmp = randint(0,1)
-        print("CHEH", tmp)
+        print("Cheh")
         if tmp == 1 :
-            return 60
+            return 20
         elif tmp == 0 :
-            return -60
+            return -20
     
     def chooseAction(self, hitHeight, playerPad) :
         tmp = 0
         if self.canLoseRng() == True:
             tmp = self.loosingMove()
-        elif self.canSmartShot() == True and self.playerPad != None :
+        elif self.canSmartShot() == True and self.playerPad != None and self.diff > 2:
             tmp = self.smartShot(hitHeight, playerPad)
             #self.hitHeight = self.loosingMove()
         #elif self.canSmartShot() == True:
@@ -315,13 +306,13 @@ class algorithm() :
                     #self.hitHeight = 250
                     #self.replace = 2
         #self.hitHeight = 300
-    """
 
 class   pad:
 
-    speed = 5
+    speed = 4
     move_task = None
 
+        
     def __init__(self, x, y, width, height, bal, diff, playerPad) :
 
         self.x = self.ogX = x
@@ -332,7 +323,6 @@ class   pad:
         self.direction = 0
         #self.algorithm = algorithm(bal, self, diff, playerPad)
 
-
     def sprite(self, win, color):
 
         pygame.draw.rect(win, color, (self.x, self.y, self.width, self.height))
@@ -340,10 +330,10 @@ class   pad:
     def move(self):
         if self.direction == 1:
             if self.y > 0 :
-                self.y -= 3
+                self.y -= self.speed
         elif self.direction == -1:
             if self.y < 520 :
-                self.y += 3
+                self.y += self.speed
 
     """
     async def move_loop(self, direction):
@@ -360,6 +350,33 @@ class   pad:
                 await asyncio.sleep(0.01)
     """
 
+class   pad_ai:
+
+    speed = 4
+    move_task = None
+
+    def __init__(self, x, y, width, height, bal, diff, playerPad) :
+
+        self.x = self.ogX = x
+        self.y = self.ogY = y
+        self.width = width
+        self.height = height
+        self.travelTime = 0
+        self.direction = 0
+        self.algorithm = algorithm(bal, self, diff, playerPad)
+
+    def sprite(self, win, color):
+
+        pygame.draw.rect(win, color, (self.x, self.y, self.width, self.height))
+
+    def move(self, up = True):
+        if up :
+            if self.y > 0 :
+                self.y -= 4
+        else :
+            if self.y < 520 :
+                self.y += 4
+
     def reset(self):
 
         self.x = self.ogX
@@ -367,7 +384,7 @@ class   pad:
 
 class   ball:
 
-    maxSpeed = 6
+    maxSpeed = 5
     move_task = None
 
     def __init__(self, x, y, rad):
@@ -393,9 +410,9 @@ class   ball:
         self.y = self.ogY
         #self.xSpeed = self.maxSpeed
         if self.xSpeed > 5 :
-            self.xSpeed = 6
+            self.xSpeed = 5
         elif self.xSpeed < -5 :
-            self.xSpeed = -6
+            self.xSpeed = -5
         self.ySpeed = 0
 
     def getxSpeed(self):

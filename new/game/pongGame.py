@@ -1,4 +1,4 @@
-from .models import ball, pad
+from .models import ball, pad, pad_ai, algorithm
 import asyncio
 
 class pongGame :
@@ -14,16 +14,28 @@ class pongGame :
         print("YO!")
         
         
-    async def launchGame(self) :
+    def __del__(self):
+        print("Destructor called")
+
+    async def launchGame(self, mode, diff) :
         print("WESH")
         self.game_task = None
         self.ball = ball(400, 300, 10)
-        self.leftPad = pad(0, 260, 10, 80, ball, 2, None)
-        self.rightPad = pad(790, 260, 10, 80, ball, 2, self.leftPad)
-        self.score = [0, 0]
-        self.player_number = 2
+        self.mode = mode 
+        self.leftPad = pad(0, 260, 10, 80, self.ball, 2, None)
+        self.diff = diff
+        if mode == "Online" :
+            self.rightPad = pad(790, 260, 10, 80, self.ball, 2, self.leftPad)
+            self.player_number = 2
+        elif mode == "LM" :
+            #self.leftPad = pad_ai(0, 260, 10, 80, self.ball, 2, None)
+            self.rightPad = pad_ai(790, 260, 10, 80, self.ball, diff, self.leftPad)
+        self.score = [0, 0] 
         self.game_state = True
         self.game_task = asyncio.create_task(self.start_countdown())
+        self.game_over = False
+
+
 
     async def start_countdown(self):
         for i in range(3, 0, -1):
@@ -32,7 +44,7 @@ class pongGame :
                 {
                     'type': 'countdown',
                     'countdown': i
-                }
+                } 
             )
             await asyncio.sleep(1)
         await self.pongConsumer.channel_layer.group_send(
@@ -52,22 +64,49 @@ class pongGame :
         )
         await self.game_loop()
 
+    def surv_score_bonus_points(self):
+        tmp = self.self.score[0]
+        if self.score[0] != tmp :
+            self.rightPad.algorithm.surv_score += 42
+
     async def game_loop(self):
         while True:
             #self.update_ball_position()
             #print("1")
             self.ball.move()
-            #print("2")
-            self.leftPad.move()
-            #print("3")
-            self.rightPad.move()
+            if self.mode == "Online":
+                self.leftPad.move()
+                self.rightPad.move()
+                print("2")
+            elif self.mode == "LM": 
+                #print("3")
+                self.leftPad.move()
+                self.pve()
+                if self.diff == 4:
+                    print(self.rightPad.algorithm.surv_score)
+            #print(self.ball.x)
+            #print(self.rightPad.x)
             #print("4")
             self.update_ball_position()
             #print("5")
             self.collisions(self.ball, self.leftPad, self.rightPad)
             #print("6")
+            if self.diff == 4 and self.score[1] == 1: 
+                self.game_over = True
+                print("FINI")
+            if self.score[0] == 5 or self.score[1] == 5:
+                self.game_over = True
+                print("FINI")
             await self.send_game_state()
             await asyncio.sleep(0.01)
+            if self.game_over == True:
+                del self.ball
+                if self.mode == "LM":
+                    self.rightPad.algorithm.dedge = True
+                    del self.rightPad.algorithm
+                del self.leftPad
+                del self.rightPad
+                #del self 
 
     def collisions(self ,ball, leftPad, rightPad):
         if (ball.y + ball.rad >= 600) or (ball.y - ball.rad <= 0) :
@@ -78,6 +117,7 @@ class pongGame :
                     ball.xSpeed *= -1
                     if ball.xSpeed < 8.1 :
                         ball.xSpeed += 0.05
+                    print(ball.xSpeed)
                     midPad = leftPad.y + leftPad.height / 2
                     diff = midPad - ball.y
                     reduc = (leftPad.height / 2) / ball.maxSpeed
@@ -87,19 +127,45 @@ class pongGame :
                 if ball.x + ball.rad >= rightPad.x :
                     ball.xSpeed *= -1
                     if ball.xSpeed > -8.1 :
-                        ball.xSpeed += -0.05
+                        ball.xSpeed += -0.05 
+                    print(ball.xSpeed)
                     midPad = rightPad.y + rightPad.height / 2
                     diff = midPad - ball.y
                     reduc = (leftPad.height / 2) / ball.maxSpeed
                     ball.ySpeed = diff / reduc
 
+    def     pve(self) :
+        if self.ball.xSpeed > 0 :
+            #if self.rightPad.algorithm.diff == 4 :
+                #self.rightPad.algorithm.hitHeight = self.ball.x
+            if self.rightPad.algorithm.replace == 1 :
+                self.rightPad.algorithm.hitHeight = 350
+            elif self.rightPad.algorithm.replace == 2 :
+                self.rightPad.algorithm.hitHeight = 250
+            else :
+                if self.rightPad.y + self.rightPad.speed + self.rightPad.height <= 600  and self.rightPad.algorithm.hitHeight >= self.rightPad.y + 60:
+                    self.rightPad.move(up = False)
+                elif self.rightPad.algorithm.hitHeight <= self.rightPad.y + 40  and self.rightPad.y - self.rightPad.speed >= 0:
+                    self.rightPad.move(up = True)
+            self.rightPad.algorithm.replace = 0
+        else :
+            if self.rightPad.algorithm.diff > 2 :
+                self.rightPad.algorithm.getReadyReplace(self.ball, self.rightPad)
+
     def update_ball_position(self):
         if self.ball.x <= 0:
             self.score[1] += 1
             self.reset_all()
+            if self.mode == "ai" :
+                self.rightPad.algorithm.hitHeight = 300
         if self.ball.x >= 800:
             self.score[0] += 1
             self.reset_all()
+            if self.mode == "ai" : 
+                self.rightPad.algorithm.hitHeight = 300
+            if self.diff == 4:
+                self.rightPad.algorithm.surv_score += 500
+                print(self.rightPad.algorithm.surv_score)
 
     def reset_all(self):
         #self.ball.x, ball.y = [400, 300]
@@ -109,12 +175,22 @@ class pongGame :
         self.leftPad.y = 260
 
     async def send_game_state(self):
-        game_state = {
-            'ball_position': [self.ball.x, self.ball.y],
-            'paddle1_position': (self.leftPad.y),
-            'paddle2_position': (self.rightPad.y),
-            'score': self.score,
-        }
+        if self.diff == 4 : 
+            game_state = {
+                'ball_position': [self.ball.x, self.ball.y],
+                'paddle1_position': (self.leftPad.y),
+                'paddle2_position': (self.rightPad.y),
+                'surv_score': (self.rightPad.algorithm.surv_score),
+                'game_over': (self.game_over)
+            }
+        else :
+            game_state = {
+                'ball_position': [self.ball.x, self.ball.y],
+                'paddle1_position': (self.leftPad.y),
+                'paddle2_position': (self.rightPad.y),
+                'score': self.score,
+                'game_over': (self.game_over)
+            }
         #print(self.leftPad.y)
         #print(game_state)
         await self.pongConsumer.channel_layer.group_send(
