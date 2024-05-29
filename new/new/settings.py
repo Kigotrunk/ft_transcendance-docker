@@ -42,9 +42,11 @@ AUTHENTICATION_BACKENDS = (
 
 INSTALLED_APPS = [
     'daphne',
+    'corsheaders', #(dev)
     # MY APP
     'myaccount',
     'front',
+    'frontend',
     'friends',
     'chat',
 	'api',
@@ -90,11 +92,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    #cors (dev)
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
+# Allow requests from localhost:3000 (React dev server)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://localhost:5173",
 ]
 
 ROOT_URLCONF = 'new.urls'
@@ -189,7 +194,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'media'),
 ]
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_cdn')
