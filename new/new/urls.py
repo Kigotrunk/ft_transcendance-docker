@@ -28,18 +28,19 @@ urlpatterns = [
 ]
 
 
-from myaccount.views import (
-    register_view,
-    login_view,
-    logout_view,
-    update_user_view,
-)
+#from myaccount.views import (
+    #register_view,
+    #login_view,
+    #logout_view,
+    #update_user_view,
+#)
 
 from friends.views import (
     new_friend_view,
 )
 
 from chat.views import (
+    chat_view,
     chat_view,
     chat_list,
     get_chat,
@@ -50,32 +51,43 @@ from chat.views import (
 #     pong
 # )
 
+from django.urls import path
+from myaccount.views import RegisterAPIView, LoginAPIView, LogoutAPIView, ProfileAPIView
+
 from api.views import (
     AuthStudent
 )
 urlpatterns = [
+    #path('api/register/', RegisterAPIView.as_view(), name='api-register'),
+    #path('api/login/', LoginAPIView.as_view(), name='api-login'),
+    #path('api/logout/', LogoutAPIView.as_view(), name='api-logout'),
+    #path('api/profile/<int:user_id>/', ProfileAPIView.as_view(), name='api-profile'),
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('register/', register_view, name='register'),
-    path('logout/', logout_view, name='logout'),
-    path('login/', login_view, name='login'),
-    path('reset_password/', auth_views.PasswordResetView.as_view(), name='reset_password'),
-    path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-    path('profil/', include('myaccount.urls', namespace = 'account')),
-    path('update/', update_user_view, name='update_user'),
-    path('profile/', views.profile , name='profile'),
     path('chat/', chat_view, name='chat_view'),
     path('chat_list/', chat_list, name='chat_list'),
     path('get_chat/<int:chat_id>/', get_chat, name='get_chat'),
     #path('chat/<str:username1>/<str:username2>', chat_view, name='chat_view'),
-    #path('chat/', all_conversations_view, name='all_conversations'),
     path('add-friend/<int:user_id>/', new_friend_view, name='add_friend'),
+    #path('accounts/', include('allauth.urls')),
     path('accounts/', include('allauth.urls')),
     path('', include('game.urls')),
     path('api/', AuthStudent, name='api'),
 ]
+
+
+
+# old view django
+    #path('register/', register_view, name='register'),
+    #path('logout/', logout_view, name='logout'),
+    #path('login/', login_view, name='login'),
+    #path('reset_password/', auth_views.PasswordResetView.as_view(), name='reset_password'),
+    #path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    #path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    #path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    #path('profil/', include('myaccount.urls', namespace = 'account')),
+    #path('update/', update_user_view, name='update_user'),
+    #path('profile/', views.profile , name='profile'),
 
 if settings.DEBUG:
     urlpatterns+= static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

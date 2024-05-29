@@ -62,6 +62,9 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    #Django rest
+    'rest_framework',
+    'corsheaders', # permet a react d'utiliser les API rest
 ]
 
 SITE_ID = 1
