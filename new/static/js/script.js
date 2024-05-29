@@ -104,6 +104,28 @@ const showChat = (id) => {
       else
         button.disabled = false;
     });
+    
+    const socket = new WebSocket(`ws://${window.location.host}/ws/chat/${id}/`);
+
+    socket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      messageDiv.classList.add(data.issuer === data.uid ? 'received' : 'send');
+      messageDiv.textContent = data.message;
+      talkDiv.appendChild(messageDiv);
+      talkDiv.scrollTop = talkDiv.scrollHeight;
+    };
+    messageForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = input.value;
+      socket.send(JSON.stringify({
+        'message': message,
+        'issuer': data.uid
+      }));
+      input.value = '';
+      button.disabled = true;
+    });
   });
 }
 
