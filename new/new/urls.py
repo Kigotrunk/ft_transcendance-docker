@@ -63,10 +63,10 @@ from api.views import (
     AuthStudent
 )
 urlpatterns = [
-    #path('api/register/', RegisterAPIView.as_view(), name='register'),
-    #path('api/login/', LoginAPIView.as_view(), name='login'),
-    #path('api/logout/', LogoutAPIView.as_view(), name='logout'),
-    #path('api/profile/<int:user_id>/', ProfileAPIView.as_view(), name='profile'),
+    path('api/register/', RegisterAPIView.as_view(), name='register'),
+    path('api/login/', LoginAPIView.as_view(), name='login'),
+    path('api/logout/', LogoutAPIView.as_view(), name='logout'),
+    path('api/profile/<int:user_id>/', ProfileAPIView.as_view(), name='profile'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('admin/', admin.site.urls),
