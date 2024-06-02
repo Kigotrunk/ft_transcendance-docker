@@ -1,3 +1,4 @@
+from urllib.parse import parse_qs
 from rest_framework_simplejwt.tokens import UntypedToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from django.contrib.auth.models import AnonymousUser
@@ -19,18 +20,21 @@ class JWTAuthMiddleware:
         self.inner = inner
 
     async def __call__(self, scope, receive, send):
-        headers = dict(scope['headers'])
-        if b'authorization' in headers:
+        query_string = scope['query_string'].decode()
+        query_params = parse_qs(query_string)
+        token = query_params.get('token', [None])[0]
+
+        if token:
             try:
-                auth_header = headers[b'authorization'].decode().split()
-                if auth_header[0].lower() == 'bearer':
-                    token = auth_header[1]
-                    UntypedToken(token)
-                    validated_token = JWTAuthentication().get_validated_token(token)
-                    scope['user'] = await get_user(validated_token)
+                UntypedToken(token)
+                validated_token = JWTAuthentication().get_validated_token(token)
+                scope['user'] = await get_user(validated_token)
             except (InvalidToken, TokenError):
                 scope['user'] = AnonymousUser()
         else:
             scope['user'] = AnonymousUser()
 
         return await self.inner(scope, receive, send)
+
+def JWTAuthMiddlewareStack(inner):
+    return JWTAuthMiddleware(inner)
