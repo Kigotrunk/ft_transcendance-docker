@@ -18,16 +18,8 @@ class JWTAuthMiddleware:
     def __init__(self, inner):
         self.inner = inner
 
-    def __call__(self, scope):
-        return JWTAuthMiddlewareInstance(scope, self)
-
-class JWTAuthMiddlewareInstance:
-    def __init__(self, scope, middleware):
-        self.scope = scope
-        self.middleware = middleware
-
-    async def __call__(self, receive, send):
-        headers = dict(self.scope['headers'])
+    async def __call__(self, scope, receive, send):
+        headers = dict(scope['headers'])
         if b'authorization' in headers:
             try:
                 auth_header = headers[b'authorization'].decode().split()
@@ -35,11 +27,10 @@ class JWTAuthMiddlewareInstance:
                     token = auth_header[1]
                     UntypedToken(token)
                     validated_token = JWTAuthentication().get_validated_token(token)
-                    self.scope['user'] = await get_user(validated_token)
+                    scope['user'] = await get_user(validated_token)
             except (InvalidToken, TokenError):
-                self.scope['user'] = AnonymousUser()
+                scope['user'] = AnonymousUser()
         else:
-            self.scope['user'] = AnonymousUser()
+            scope['user'] = AnonymousUser()
 
-        inner = self.middleware.inner(self.scope)
-        return await inner(receive, send)
+        return await self.inner(scope, receive, send)
