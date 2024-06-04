@@ -1,12 +1,14 @@
-import React from 'react';
+import React from "react";
+import { Link } from "react-router-dom";
 
-function Accueil() {
+const Accueil = () => {
   return (
     <div>
       <h1>Accueil</h1>
-      <p>Welcome to the Accueil page!</p>
+      <Link to="/login">Login</Link>
+      <Link to="/register">Register</Link>
     </div>
   );
-}
+};
 
 export default Accueil;

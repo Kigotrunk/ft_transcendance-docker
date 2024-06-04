@@ -5,7 +5,7 @@ const Profile = () => {
 
   useEffect(() => {
     const getProfile = async () => {
-      const res = await axios.get('http://localhost:8000/api/profile/1/');
+      const res = await axios.get('http://localhost:8000/api/profile/0/');
       console.log(res);
     }
     getProfile();
