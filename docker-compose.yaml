@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    build: ./postgres/.
+    networks:
+        - tdc
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: kigo
+      POSTGRES_USER: postgres
+      POSTGRES_DB: new
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 1s
+      retries: 50
+  back:
+    container_name: django
+    image: django
+    networks:
+        - tdc
+    build: ./new/
+    restart: always
+    ports: 
+      - '8000:8000'
+    environment:
+      POSTGRES_PASSWORD: kigo
+      POSTGRES_USER: postgres
+      POSTGRES_DB: new
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - db
+networks:
+  tdc:
+    name: transcendance

@@ -14,7 +14,7 @@ class Conversation(models.Model):
 
 class PrivateMessage(models.Model):
     conversation = models.ForeignKey(Conversation, related_name='messages', on_delete=models.CASCADE)
-    message = models.CharField()
+    message = models.CharField(max_length=50)
     issuer = models.ForeignKey(Account, related_name='messages_issuer', on_delete=models.CASCADE)
     receiver = models.ForeignKey(Account, related_name='messages_receiver', on_delete=models.CASCADE)
     moment = models.DateTimeField(auto_now_add=True)

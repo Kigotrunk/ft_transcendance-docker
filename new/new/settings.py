@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-r)fu64v=9gr^53gdp*2vy%j+!zx4@t&6fffl#2jza=xs-bul+q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = "myaccount.Account"
 AUTHENTICATION_BACKENDS = (
@@ -158,7 +158,7 @@ DATABASES = {
         'NAME': 'new',    # Nom de la base de données
         'USER': 'postgres',                # Nom d'utilisateur de la base de données
         'PASSWORD': 'kigo',          # Mot de passe de la base de données
-        'HOST': 'localhost',                        # Hôte de la base de données (par défaut : 'localhost')
+        'HOST': 'db',                        # Hôte de la base de données (par défaut : 'localhost')
         'PORT': '5432',                                 # Port de la base de données (par défaut : '')
     }
 }

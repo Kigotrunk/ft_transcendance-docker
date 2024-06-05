@@ -40,7 +40,7 @@ def GetAcessToken(code):
 def AuthStudent(request):
 	if 'code' in request.GET:
 		code = request.GET['code']
-
+		
 		access_token = GetAcessToken(code)
 		if access_token:
 			reponse = GetInfoClient(access_token, "https://api.intra.42.fr/v2/me")
