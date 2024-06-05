@@ -6,42 +6,30 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from .forms import FormMessage
 from django.urls import reverse
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 
 # Create your views here.
 
-@login_required
-def chat_view(request):
-    current_user = request.user
-    conversations_with_other_user = []
-    conversations = Conversation.objects.filter(user1=current_user) | Conversation.objects.filter(user2=current_user)
-    for conversation in conversations:
-        other_user = conversation.user1 if conversation.user2 == current_user else conversation.user2
-        conversations_with_other_user.append((conversation, other_user))
-    selected_conversation_id = request.GET.get('conversation_id')
-    selected_conversation = None
-    messages = []
-    form = FormMessage()
-    if selected_conversation_id:
-        selected_conversation = get_object_or_404(Conversation, id=selected_conversation_id)
-        messages = PrivateMessage.objects.filter(conversation=selected_conversation).order_by('moment')
-        if request.method == 'POST':
-            form = FormMessage(request.POST)
-            if form.is_valid():
-                private_message = form.save(commit=False)
-                private_message.issuer = current_user
-                private_message.receiver = selected_conversation.user1 if current_user == selected_conversation.user2 else selected_conversation.user2
-                private_message.conversation = selected_conversation
-                private_message.save()
-                return redirect(f'/chat/?conversation_id={selected_conversation_id}') 
-    context = {
-        'conversations_with_other_user': conversations_with_other_user,
-        'selected_conversation': selected_conversation,
-        'messages': messages,
-        'form': form,
-    }
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_conversations(request):
+    user = request.user
+    conversations = Conversation.objects.filter(Q(user1=user) | Q(user2=user))
+    response_data = []
 
-    return render(request, 'chat/chat.html', context)
+    for conversation in conversations:
+        messages = conversation.messages.filter(receiver=user)
+        conversation_data = {
+            'id': conversation.id,
+            'user1': conversation.user1.username,
+            'user2': conversation.user2.username,
+            'messages': [{'id': msg.id, 'message': msg.message, 'issuer': msg.issuer.username, 'moment': msg.moment} for msg in messages]
+        }
+        response_data.append(conversation_data)
+
+    return JsonResponse(response_data, safe=False)
 
 
 # @login_required

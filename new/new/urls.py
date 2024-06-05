@@ -40,8 +40,6 @@ from friends.views import (
 )
 
 from chat.views import (
-    chat_view,
-    chat_view,
     chat_list,
     get_chat,
     #all_conversations_view,
@@ -59,24 +57,25 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from rest_framework_simplejwt.views import TokenBlacklistView
+
 from api.views import (
     AuthStudent
 )
 urlpatterns = [
-    #path('api/register/', RegisterAPIView.as_view(), name='register'),
-    #path('api/login/', LoginAPIView.as_view(), name='login'),
-    #path('api/logout/', LogoutAPIView.as_view(), name='logout'),
-    #path('api/profile/<int:user_id>/', ProfileAPIView.as_view(), name='profile'),
+    path('api/register/', RegisterAPIView.as_view(), name='register'),
+    path('api/login/', LoginAPIView.as_view(), name='login'),
+    path('api/logout/', LogoutAPIView.as_view(), name='logout'),
+    path('api/profile/<int:user_id>/', ProfileAPIView.as_view(), name='profile'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('chat/', chat_view, name='chat_view'),
     path('chat_list/', chat_list, name='chat_list'),
     path('get_chat/<int:chat_id>/', get_chat, name='get_chat'),
     #path('chat/<str:username1>/<str:username2>', chat_view, name='chat_view'),
     path('add-friend/<int:user_id>/', new_friend_view, name='add_friend'),
-    #path('accounts/', include('allauth.urls')),
     path('accounts/', include('allauth.urls')),
     path('', include('game.urls')),
     path('api/', AuthStudent, name='api'),

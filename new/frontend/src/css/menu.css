@@ -45,6 +45,7 @@
 }
 
 .menu {
+	display: none;
 	height: calc(100vh - 80px);
 	width: 64px;
 	background-color: var(--background);
@@ -57,6 +58,7 @@
 .menu a {
 	height: 64px;
 	width: 100%;
+	font-size: 28px;
 	color: var(--text);
 	text-decoration: none;
 	display: flex;
@@ -72,34 +74,13 @@
 	color: white;
 }
 
-.menu .material-icons {
-	font-size: 28px;
-}
-
 .menu .active {
 	color: var(--primary);
 }
 
-.short-menu {
-	display: none;
-}
-
-.extanded-menu {
-	width: 200px !important;
-	display: none;
-}
-
-.extanded-menu a {
-	flex-direction: row !important;
-	justify-content: flex-start !important;
-}
-
-.extanded-menu .material-icons {
-	margin: 0px 16px !important;
-}
 
 @media only screen and (min-width: 768px) {
-	.short-menu {
+	.menu {
 		display: flex;
 	}
 }

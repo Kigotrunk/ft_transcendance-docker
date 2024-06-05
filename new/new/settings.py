@@ -66,13 +66,15 @@ INSTALLED_APPS = [
     #Django rest
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     #'corsheaders', # permet a react d'utiliser les API rest
 ]
 
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',
+        #'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
 
