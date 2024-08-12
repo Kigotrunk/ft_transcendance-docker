@@ -1,42 +1,51 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "../css/header.css";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
+import { useTranslation } from "react-i18next";
 
-const Header = () => {
-  const showMenu = () => {
-    // Implement showMenu logic
+const Header = ({ setShowPhoneMenu }) => {
+    const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  const [research, setResearch] = useState("");
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (research === "") {
+      return;
+    }
+    navigate(`/search/${research}`);
   };
 
   return (
     <div className="header">
-      <a className="btn-menu" onClick={showMenu}>
+      <div className="btn-menu" onClick={() => setShowPhoneMenu(true)}>
         <MenuIcon></MenuIcon>
-      </a>
+      </div>
       <Link to="/home" className="logo">
         <h3>PONG</h3>
       </Link>
-      <div className="search-bar">
-        <input type="text" placeholder="Search" />
-        <button>
+      <form className="search-bar" onSubmit={handleSearchSubmit}>
+        <input
+          type="text"
+          placeholder={t('Search')}
+          onChange={(e) => setResearch(e.target.value)}
+        />
+        <button type="submit">
           <SearchIcon></SearchIcon>
         </button>
-      </div>
-      <Link to="/profile" className="user">
+      </form>
+      <Link to={`profile/${user.id}`} className="user">
         <span>
           <img
-            id="id_profile_links"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-            src=""
-            /* Add your profile picture URL here */ alt="profile logo"
-            width="40"
-            height="40"
+            src={`https://localhost:8000${user.profile_picture}`}
+            alt="profile picture"
           />
         </span>
-        <span className="username">{/* Add username here */}</span>
+        <span className="username">{user.username}</span>
       </Link>
     </div>
   );

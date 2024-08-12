@@ -1,42 +1,91 @@
 version: '3.9'
 
 services:
+
+
   db:
-    container_name: postgres
     image: postgres
-    build: ./postgres/.
-    networks:
-        - tdc
-    ports:
-      - 5432:5432
     environment:
-      POSTGRES_PASSWORD: kigo
-      POSTGRES_USER: postgres
-      POSTGRES_DB: new
-    restart: always
+      - POSTGRES_DB=new
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=kigo
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 1s
-      timeout: 1s
-      retries: 50
-  back:
-    container_name: django
-    image: django
-    networks:
-        - tdc
-    build: ./new/
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d new'"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
     restart: always
-    ports: 
-      - '8000:8000'
-    environment:
-      POSTGRES_PASSWORD: kigo
-      POSTGRES_USER: postgres
-      POSTGRES_DB: new
+    networks:
+      - transnetwork
+
+
+    
+  frontend:
+    build:
+      context: ./new/frontend
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - transnetwork
+
+  backend:
+    build:
+      context: ./new
+      dockerfile: Dockerfile
     depends_on:
       db:
         condition: service_healthy
-    links:
-      - db
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./new/media:/media
+      - ./new/static:/static
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=new
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=kigo
+      - DJANGO_SETTINGS_MODULE=new.settings
+    networks:
+      - transnetwork
+    restart: always
+
+
+  redis:
+    image: redis
+    networks:
+      - transnetwork
+    healthcheck:
+      test: ["CMD", "redis-cli", "frontend"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  nginx:
+    image: nginx
+    ports:
+      - 3000:3000
+      - 8000:8000
+    volumes:
+      - ./new/static:/static:ro
+      - ./new/media:/media:ro
+      - ./nginx/ft_transcendence.conf:/etc/nginx/conf.d/ft_transcendence.conf
+      - ./nginx/certificates:/certificates
+    depends_on:
+      - frontend
+      - backend
+    restart: always
+    networks:
+      - transnetwork
+
+volumes:
+  postgres_data:
+
 networks:
-  tdc:
+  transnetwork:
     name: transcendance

@@ -1,10 +1,14 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../AuthContext";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import "../css/login.css";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+
+  const { t } = useTranslation();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -15,45 +19,45 @@ const Login = () => {
     event.preventDefault();
     setError("");
     try {
-      const response = await axios.post("http://localhost:8000/api/login/", {
-        email: username,
+      const response = await axios.post("https://localhost:8000/api/login/", {
+        email: email,
         password: password,
       });
-      console.log(response);
-      login(response.data.access);
-      axios.defaults.headers.common["Authorization"] =
-        "Bearer " + response.data.access;
-
+      login(response.data.user, response.data.access, response.data.refresh);
       navigate("/home");
     } catch (err) {
       console.error(err);
-      setError("Invalid Credentials");
+      setError(t('Invalid Credentials'));
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
+    <div className="login-content">
+      <div className="login-container">
+      <span style={{fontSize:"64px"}}>{t('login')}</span>
+      <form onSubmit={handleSubmit} className="login-form">
+        <div className="input-container">
+          <label>{t('email')}</label>
           <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value.replace(/[;/\\|<>]/g, ""))}
           />
         </div>
-        <div>
-          <label>Password:</label>
+        <div className="input-container">
+          <label>{t('Password')}</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">{t('Login')}</button>
       </form>
       {error && <p>{error}</p>}
+      <Link to={"/reset_password"}>{t('Reset Password')}</Link>
+      <Link to={"/register"}>{t('Register')}</Link>
+      </div>
     </div>
   );
 };

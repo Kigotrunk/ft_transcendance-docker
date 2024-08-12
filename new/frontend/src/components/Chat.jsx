@@ -1,90 +1,140 @@
-import React, { useState, useEffect } from 'react';
-import '../css/chat.css';
+import React, { useState, useEffect, useContext, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import "../css/chat.css";
+import { AuthContext } from "../AuthContext";
+import axios from "axios";
+import ConvCard from "./ChatUtils/ConvCard";
+import ChatHeader from "./ChatUtils/ChatHeader";
+import NewConv from "./ChatUtils/NewConv";
+import TalkSection from "./ChatUtils/TalkSection";
+import { useTranslation } from "react-i18next";
 
 const Chat = () => {
+    const { t } = useTranslation();
+  const { cid } = useParams();
+  const navigate = useNavigate();
   const [conversations, setConversations] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [selectedChatId, setSelectedChatId] = useState(null);
-  const [messageInput, setMessageInput] = useState('');
+  const [selectedChat, setSelectedChat] = useState(null);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [newConv, setNewConv] = useState(false);
+  const { user, setChatNotifsId, chatNotifsId, chatSocketRef } =
+    useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getConversations = async () => {
+    try {
+      const response = await axios.get(
+        `https://localhost:8000/api/conversations/?page=1`
+      );
+      const modifiedConversations = response.data.results.map(
+        (conversation) => {
+          return {
+            ...conversation,
+            user:
+              conversation.user1.id !== user.id
+                ? conversation.user1
+                : conversation.user2,
+          };
+        }
+      );
+      setConversations(modifiedConversations);
+      if (cid) {
+        setSelectedChat(modifiedConversations.find((conv) => conv.id == cid));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    // Fetch chat list
-    fetch('http://localhost:8000/chat_list')
-      .then(response => {console.log(response); response.json()})
-      .then(data => {
-        setConversations(data.conversations);
-      })
-      .catch(error => {
-        console.error('Error fetching chat list:', error);
-      });
+    if (!chatSocketRef.current) {
+      setIsLoading(true);
+      return;
+    }
+    chatSocketRef.current.addEventListener("message", getConversations);
+    setIsLoading(false);
+    return () => {
+      if (chatSocketRef.current) {
+        chatSocketRef.current.removeEventListener("message", getConversations);
+      }
+    };
+  }, [chatSocketRef.current]);
+
+  useEffect(() => {
+    getConversations();
   }, []);
 
+  const getBlockedStatus = async () => {
+    try {
+      const response = await axios.get(
+        `https://localhost:8000/block_status/?other_id=${selectedChat.user.id}`
+      );
+      setIsBlocked(response.data.blocked);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Fetch chat messages when selectedChatId changes
-    if (selectedChatId) {
-      fetch(`http://localhost:8000/get_chat/${selectedChatId}`)
-        .then(response => response.json())
-        .then(data => {
-          setMessages(data.messages);
-        })
-        .catch(error => {
-          console.error('Error fetching chat:', error);
-        });
+    setIsLoading(true);
+    if (conversations.length > 0) {
+      setSelectedChat(conversations.find((conv) => conv.id == cid));
     }
-  }, [selectedChatId]);
+  }, [cid]);
 
-  const showChat = (id) => {
-    setSelectedChatId(id);
-  };
-
-  const sendMessage = (e) => {
-    e.preventDefault();
-    const message = messageInput.trim();
-    if (message !== '') {
-      // Implement sending message logic here
-      setMessageInput('');
+  useEffect(() => {
+    if (selectedChat) {
+      getBlockedStatus();
     }
-  };
+  }, [selectedChat]);
 
   return (
-    <div className="chat-container">
-      <div className="chat-list">
-        {conversations.map(conversation => (
-          <div key={conversation.id} className="chat-user" onClick={() => showChat(conversation.id)}>
-            <img src={conversation.other_user.pp} alt="profile picture" />
-            <h4>{conversation.other_user.username}</h4>
-            <div className="overlay"></div>
+    <div className="chat-content">
+      <div className="conv-list">
+        <div className="conv-header">
+          <span>{t('Privates messages')}</span>
+          <div
+            id="new-conv-btn"
+            title={t('New private message')}
+            onClick={() => setNewConv(true)}
+          >
+            +
           </div>
+        </div>
+        {conversations.map((conversation) => (
+          <ConvCard
+            key={conversation.id}
+            onClick={() => {
+              navigate(`/chat/${conversation.id}`);
+              setChatNotifsId((prev) =>
+                prev.filter((id) => id !== conversation.id)
+              );
+            }}
+            user={conversation.user}
+            nonRead={chatNotifsId.includes(conversation.id)}
+          />
         ))}
       </div>
-      { selectedChatId ? (
-      <div className="chat-content">
+      {!isLoading && selectedChat && (
         <div className="chat-right-section">
-          <div className="talk">
-            {messages.map((message, index) => (
-              <div key={index} className={`message ${message.issuer === data.uid ? 'received' : 'send'}`}>
-                {message.message}
-              </div>
-            ))}
-          </div>
-          <form onSubmit={sendMessage} className="message-form">
-            <div className="input">
-              <input
-                type="text"
-                className="text-input"
-                placeholder="Type a message"
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                autoComplete="off"
-                required
-              />
-              <button type="submit" className="send-button" disabled={messageInput.trim() === ''}>
-                <span className="material-icons">send</span>
-              </button>
-            </div>
-          </form>
+          <ChatHeader
+            user2={selectedChat.user}
+            isBlocked={isBlocked}
+            setIsBlocked={setIsBlocked}
+          />
+          <TalkSection
+            cid={selectedChat.id}
+            user2={selectedChat.user}
+            isBlocked={isBlocked}
+            getConversations={getConversations}
+          />
         </div>
-      </div> ) : null}
+      )}
+      {newConv ? (
+        <NewConv setNewConv={setNewConv} getConversations={getConversations} />
+      ) : null}
     </div>
   );
 };

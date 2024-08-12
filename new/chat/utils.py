@@ -9,10 +9,10 @@ from myaccount.models import Account
 @database_sync_to_async
 def get_user(validated_token):
     try:
-        user_id = validated_token[JWTAuthentication.user_id_field]
-        user = Account.objects.get(**{JWTAuthentication.user_id_field: user_id})
+        user_id = validated_token.payload['user_id']  # relire la doc pour voir ce que fait validated_token[JWTAuthentication.user_id_field]
+        user = Account.objects.get(id=user_id)
         return user
-    except Account.DoesNotExist:
+    except (Account.DoesNotExist, KeyError):
         return AnonymousUser()
 
 class JWTAuthMiddleware:
@@ -28,7 +28,9 @@ class JWTAuthMiddleware:
             try:
                 UntypedToken(token)
                 validated_token = JWTAuthentication().get_validated_token(token)
-                scope['user'] = await get_user(validated_token)
+                user = await get_user(validated_token)
+                print (user)
+                scope['user'] = user
             except (InvalidToken, TokenError):
                 scope['user'] = AnonymousUser()
         else:
@@ -38,3 +40,4 @@ class JWTAuthMiddleware:
 
 def JWTAuthMiddlewareStack(inner):
     return JWTAuthMiddleware(inner)
+

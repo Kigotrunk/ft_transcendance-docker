@@ -5,6 +5,32 @@ import asyncio
 import time
 import random
 from math import *
+from django.db import models
+from django.db import models
+from myaccount.models import Account
+from django.conf import settings
+import random 
+from django.contrib.postgres.fields import ArrayField
+
+class partie(models.Model):
+    player1 = models.ForeignKey(Account, related_name='partie_as_user1', on_delete=models.CASCADE)
+    player2 = models.ForeignKey(Account, related_name='partie_as_user2', on_delete=models.CASCADE)
+    score_player1 = models.IntegerField()       
+    score_player2 = models.IntegerField()
+    time = models.DateTimeField(auto_now_add=True)
+    order_points_scored = ArrayField(models.CharField(max_length=100), default=list)
+    timers = ArrayField(models.IntegerField(), default=list)
+    nb_echange_per_point = ArrayField(models.IntegerField(), default=list)
+    moyenne_echange = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.player1} vs {self.player2}"
+
+    class Meta:
+        verbose_name = "Game"
+        verbose_name_plural = "Games"
+        ordering = ['-time']
+
 
 
 class algorithm() : 
@@ -43,7 +69,6 @@ class algorithm() :
                 self.surv_score = 0
                 self.thd_surv_score = threading.Thread(target=self.monitoring_score_survival, args=(), daemon=True)
                 self.thd_surv_score.start()
-            print("constructeur vide")
             #self.thd.join()
 
 
@@ -67,7 +92,6 @@ class algorithm() :
             rF = random.uniform(0.90, 1.10)
             rF *= 600
             rF -= 600
-            print(rF)
             hitHeight +=rF
             self.rng = 7
             self.unlucky = randint(0, self.rng)
@@ -84,7 +108,6 @@ class algorithm() :
                 hitHeight = sqrt((hitHeight - ball.rad) * (hitHeight - ball.rad))
             self.rng = 15
             self.unlucky = randint(0, self.rng)
-            print("PREACTION", hitHeight)
             hitHeight += self.chooseAction(hitHeight, self.playerPad)
         elif self.diff == 3 :
             rF = random.uniform(0.92, 1.08)
@@ -113,7 +136,6 @@ class algorithm() :
             #hitHeight = ball.x
         
             #changer pour Calculer les rebons a l'avance#
-        print(hitHeight)
         #print("Pre SMARTSHOT : ",hitHeight)
         #hitHeight += self.smartShot(ball, Pad.algorithm.playerPad, Pad)
         #print("Post SMARTSHOT : ",hitHeight)
@@ -152,7 +174,6 @@ class algorithm() :
         #if hitHeight > 150 or hitHeight < 430 :
             #value = 20
         #elif hitHeight >
-        print("SMARTSHOT")
         if hitHeight < 115 and playerPad.y < 200 :
             return -20
         elif hitHeight < 115 and playerPad.y > 400 :
@@ -194,18 +215,14 @@ class algorithm() :
         ballYSpeedSet = (hhneg - ball.y) / TTneg 
         truc = (ballYSpeedSet * reduc) + ball.y - 50
 
-        print("Truc", truc)
         return truc
         prout = 0
         if playerPad.y < 205 :
             if rightPad.algorithm.hitHeight <= 125 :
-                print("EN HAUT + DROITE HAUT: ")
                 prout = - 40
             elif  rightPad.algorithm.hitHeight > 125 and rightPad.algorithm.hitHeight < 475 :
-                print("EN HAUT + MILIEU BAS: ")
                 prout = - 15
         elif playerPad.y > 395 : 
-            print("EN BAS : ")
             if rightPad.algorithm.hitHeight >= 475 :
                 prout = 40
             elif rightPad.algorithm.hitHeight < 475 and rightPad.algorithm.hitHeight > 125 :
@@ -236,7 +253,6 @@ class algorithm() :
 
     def loosingMove(self) :
         tmp = randint(0,1)
-        print("Cheh")
         if tmp == 1 :
             return 20
         elif tmp == 0 :
@@ -267,7 +283,6 @@ class algorithm() :
             tmp = (self.rng / 2) + (self.rng / 3)
         else :
             tmp = 2
-        #print(tmp)
         i = 0
         while i <= tmp :
             if self.unlucky == i :

@@ -1,5 +1,5 @@
 .header {
-	position: relative;
+	position: fixed;
 	width: 100%;
 	height: 80px;
 	background-color: var(--background);
@@ -17,7 +17,7 @@
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	gap: 6px;
+	gap: 8px;
 	padding: 0px 24px 0px 24px;
 	border-radius: 2px;
 	transition: all 0.1s;
@@ -25,8 +25,10 @@
 }
 
 .user img {
-	font-size: 1.777rem;
-	border-radius: 100%;
+	object-fit: cover;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
 }
 
 .user:hover {
@@ -34,13 +36,13 @@
 	background-color: rgba(0, 0, 0, 0.1);
 }
 
-.username {
+.user .username {
 	margin-left: 4px;
 	font-size: 1.777rem;
-	display: none;
 }
 
 .logo {
+	display: none;
 	margin: 0px 24px;
 	text-decoration: none;
 	color: var(--text);
@@ -91,7 +93,7 @@
     width: 100%;
     font-family: "Gantari", sans-serif;
     font-size: 1.333rem;
-    background-color: var(--background);
+    background-color: inherit;
     color: var(--text);
     padding: 0 12px;
     border: none;
@@ -101,7 +103,7 @@
     position: relative;
     width: 48px;
     height: 48px;
-    background-color: var(--background);
+    background-color: inherit;
     color: var(--text);
     border: none;
 	display: flex;
@@ -114,7 +116,7 @@
 }
 
 .search-bar:focus-within {
-    border: 2px solid var(--primary)
+    border-width: 2px;
 }
 
 .search-bar button:hover {
@@ -128,6 +130,12 @@
 	.username {
 		display: block;
 	}
+	.logo {
+		display: block;
+	}
+	.search-bar {
+		margin: 0px;
+	}
 }
 
 @media (prefers-color-scheme: dark) {
@@ -138,7 +146,7 @@
 		background-color: rgba(255, 255, 255, 0.2) !important;
 	}
 	.search-bar {
-		border: 1px solid var(--primary);
+		border-color: rgb(255, 255, 255, 0.2);
 	}
     .user:hover {
         background-color: rgba(255, 255, 255, 0.1);
@@ -147,6 +155,6 @@
         background-color: rgba(255, 255, 255, 0.1);
     }
     .header {
-        box-shadow: 0px 0px 10px var(--primary);
+        background-color: var(--neutral-900);
     }
 }

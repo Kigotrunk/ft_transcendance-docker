@@ -50,12 +50,22 @@ class Account(AbstractBaseUser):
     is_admin            = models.BooleanField(default=False)
     is_superuser        = models.BooleanField(default=False)
     is_staff            = models.BooleanField(default=False)
+    is_connected        = models.BooleanField(default=False)
+    nb_win              = models.IntegerField(default=0)
+    nb_loose            = models.IntegerField(default=0)
+    nb_games            = models.IntegerField(default=0)
+    coef                = models.IntegerField(default=40)
+    elo                 = models.IntegerField(default=1000)
+    nb_top8             = models.IntegerField(default=0)
+    nb_top4             = models.IntegerField(default=0)
+    nb_top2             = models.IntegerField(default=0)
+    nb_top1             = models.IntegerField(default=0)
+    highest_score       = models.IntegerField(default=0)
 
     objects = AccountManager()
 
     USERNAME_FIELD = 'email' # --> si on veut se connecter avec l'email plutot que le username
     REQUIRED_FIELDS = ['username']
-
 
     def __str__(self):
         return self.username

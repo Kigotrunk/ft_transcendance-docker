@@ -1,12 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 
 const Accueil = () => {
+        const { t } = useTranslation();
   return (
-    <div>
-      <h1>Accueil</h1>
-      <Link to="/login">Login</Link>
-      <Link to="/register">Register</Link>
+    <div className="acceuil-container">
+      <h1>{t('Accueil')}</h1>
+      <div style={{display: "flex", flexDirection: "row", gap: "64px", marginBottom: "128px"}}>
+        <Link to="/login">{t('Login')}</Link>
+        <Link to="/register">{t('Register')}</Link>
+      </div>
     </div>
   );
 };

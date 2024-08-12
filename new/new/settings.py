@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+from rest_framework.pagination import PageNumberPagination
+from corsheaders.defaults import default_headers
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +31,7 @@ SECRET_KEY = 'django-insecure-r)fu64v=9gr^53gdp*2vy%j+!zx4@t&6fffl#2jza=xs-bul+q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = "myaccount.Account"
 AUTHENTICATION_BACKENDS = (
@@ -46,11 +49,9 @@ INSTALLED_APPS = [
     'corsheaders', #(dev)
     # MY APP
     'myaccount',
-    'front',
     'frontend',
     'friends',
     'chat',
-	'api',
     'game',
     # AUTO APP
     'django.contrib.admin',
@@ -70,40 +71,25 @@ INSTALLED_APPS = [
     #'corsheaders', # permet a react d'utiliser les API rest
 ]
 
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',
         #'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
 }
-
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-SITE_ID = 1
-
-SOCIALACCOUNT_PROVIDERS = {
-    '42': {
-        'APP': {
-            'client_id': 'u-s4t2ud-d115455920be4e8ebaa5ac2c9dcfea89a7d2ff886b63968e88281cc31bf28bc1',
-            'secret': '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',
-            'key': ''
-        },
-        'SCOPE': ['public'],
-         'AUTH_PARAMS': {
-            'redirect_uri': 'http://127.0.0.1:8000/accounts/42/login/callback/',
-        }
-    }
-}
-
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -113,13 +99,29 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     #cors (dev)
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # Allow requests from localhost:3000 (React dev server)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:3000",
+    "https://localhost:5173",
+    "https://localhost:3000",
+]
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "DELETE",
+    "PUT",
+    "PATCH",
+    "OPTIONS",
+]
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'content-type',
+    'authorization',
+    'x-csrftoken',
 ]
 
 ROOT_URLCONF = 'new.urls'
@@ -141,37 +143,34 @@ TEMPLATES = [
 ]
 
 ASGI_APPLICATION = "new.asgi.application"
+WSGI_APPLICATION = 'new.wsgi.application'
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [("redis", 6379)],
         },
     },
 }
-#WSGI_APPLICATION = 'new.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # Le moteur de base de données que vous utilisez
-        'NAME': 'new',    # Nom de la base de données
-        'USER': 'postgres',                # Nom d'utilisateur de la base de données
-        'PASSWORD': 'kigo',          # Mot de passe de la base de données
-        'HOST': 'db',                        # Hôte de la base de données (par défaut : 'localhost')
-        'PORT': '5432',                                 # Port de la base de données (par défaut : '')
-    }
-}
+POSTGRES_HOST = os.environ.get("POSTGRES_HOST")
+POSTGRES_DB = os.environ.get("POSTGRES_DB")
+POSTGRES_USER = os.environ.get("POSTGRES_USER")
+POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD")
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [('localhost', 6379)],
-        },
-    },
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "new",
+        "USER": "postgres",
+        "PASSWORD": "kigo",
+        "HOST": "db",
+        "PORT": "5432",
+    }
 }
 
 
@@ -217,7 +216,7 @@ STATICFILES_DIRS = [
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media_cdn')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 TEMP = os.path.join(BASE_DIR, 'media_cdn/temp')
 
 BASE_URL = "http://127.0.0.1:8000"
@@ -231,9 +230,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Config SMTP EMAIL
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'mail.smtp2go.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ftranscendance@gmail.com'
-EMAIL_HOST_PASSWORD = 'Finito42'
+EMAIL_HOST_USER = 'student.42nice.fr'
+EMAIL_HOST_PASSWORD = 'HYv5RXOEeOf6vRyt'
+DEFAULT_FROM_EMAIL = 'haouni@student.42nice.fr'
 

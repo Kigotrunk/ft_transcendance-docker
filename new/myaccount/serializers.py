@@ -1,11 +1,34 @@
 from rest_framework import serializers
 from .models import Account
 from django.contrib.auth import login, authenticate
+from chat.models import Conversation, PrivateMessage
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ('id', 'username', 'email', 'hide_email', 'profile_picture', 'date_joined', 'last_login', 'is_active', 'is_in_game')
+        fields = ('id', 'username', 'profile_picture', 'nb_win', 'nb_loose', 'elo', 'nb_top8', 'nb_top4', 'nb_top2', 'nb_top1', 'highest_score')
+
+
+class PrivateMessageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PrivateMessage
+        fields = ('id', 'conversation', 'message', 'issuer', 'receiver', 'moment')
+
+class PrivateMessageSerializer(serializers.ModelSerializer):
+    issuer = AccountSerializer()
+    receiver = AccountSerializer()
+
+    class Meta:
+        model = PrivateMessage
+        fields = ('id', 'conversation', 'message', 'issuer', 'receiver', 'moment')
+
+class ConversationSerializer(serializers.ModelSerializer):
+    user1 = AccountSerializer()
+    user2 = AccountSerializer()
+
+    class Meta:
+        model = Conversation
+        fields = ('id', 'user1', 'user2', 'time')
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)

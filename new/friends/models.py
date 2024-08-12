@@ -5,23 +5,42 @@ from myaccount.models import Account
 
 # Create your models here.
 
-class Friends(models.Model):
-    user1 = models.ForeignKey(Account, related_name='friendships', on_delete=models.CASCADE)
-    friends = models.ManyToManyField(Account, related_name='friends', blank=True)
-    relation_created_at = models.DateTimeField(auto_now_add=True)
+from django.db import models
+from myaccount.models import Account
+
+class Friend(models.Model):
+    user = models.ForeignKey(Account, related_name='friends', on_delete=models.CASCADE)
+    friend = models.ForeignKey(Account, related_name='friend_of', on_delete=models.CASCADE)
+    time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'friend')
 
     def __str__(self):
-        return self.user1.username
+        return f"{self.user} is friends with {self.friend}"
 
-    def add_friend(self, account):
-        if not account in self.friends.all():
-            self.friends.add(account)
-            self.save()
-        
-    def remove_friend(self, account):
-        if account in self.friends.all():
-            self.friends.remove(account)
-            self.save()
+class Invitation(models.Model):
+    WAITING = 'Waiting'
+    ACCEPTED = 'accepted'
+    REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (WAITING, 'Waiting'),
+        (ACCEPTED, 'Accepted'),
+        (REJECTED, 'Rejected'),
+    ]
+
+    sender = models.ForeignKey(Account, related_name='sender', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(Account, related_name='receiver', on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=WAITING)
+    time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('sender', 'receiver')
+
+    def __str__(self):
+        return f"Invitation from {self.sender} to {self.receiver} ({self.status})"
+
+
 
 
 
