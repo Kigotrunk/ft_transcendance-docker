@@ -29,6 +29,8 @@ services:
     depends_on:
       - backend
       - redis
+    env_file:
+      - .env
     networks:
       - transnetwork
 
@@ -45,11 +47,11 @@ services:
       - ./new/media:/media
       - ./new/static:/static
     environment:
-      - POSTGRES_HOST=db
-      - POSTGRES_DB=new
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=kigo
-      - DJANGO_SETTINGS_MODULE=new.settings
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DJANGO_SETTINGS_MODULE: new.settings
     networks:
       - transnetwork
     restart: always
@@ -84,7 +86,7 @@ services:
       - transnetwork
 
 volumes:
-  postgres_data:
+  postgres-data:
 
 networks:
   transnetwork:

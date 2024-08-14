@@ -9,4 +9,11 @@ RUN npm install
 
 COPY . .
 
+COPY .env .env
+
+COPY init.sh /init.sh
+
+RUN chmod +x /init.sh
+RUN /init.sh
+
 CMD ["npm", "run", "dev"]

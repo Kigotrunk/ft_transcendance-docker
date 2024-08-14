@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-r)fu64v=9gr^53gdp*2vy%j+!zx4@t&6fffl#2jza=xs-bul+q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = "myaccount.Account"
 AUTHENTICATION_BACKENDS = (
@@ -102,12 +102,17 @@ MIDDLEWARE = [
 ]
 
 # Allow requests from localhost:3000 (React dev server)
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "https://localhost:5173",
-    "https://localhost:3000",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",
+#     "http://localhost:3000",
+#     "https://localhost:5173",
+#     "https://localhost:3000",
+#     #"https://c3r2p3.42nice.fr:3000",
+#     "https://c1r2p3.42nice.fr:3000",
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 CORS_ALLOW_METHODS = [
     "GET",
@@ -165,10 +170,10 @@ POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD")
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "new",
-        "USER": "postgres",
-        "PASSWORD": "kigo",
-        "HOST": "db",
+        "NAME": POSTGRES_DB,
+        "USER": POSTGRES_USER,
+        "PASSWORD": POSTGRES_PASSWORD,
+        "HOST": POSTGRES_HOST,
         "PORT": "5432",
     }
 }
@@ -219,7 +224,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 TEMP = os.path.join(BASE_DIR, 'media_cdn/temp')
 
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "https://c3r2p3.42nice.fr:8000"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
