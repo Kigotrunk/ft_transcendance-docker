@@ -27,7 +27,7 @@ class Player:
 
     async def disconnect(self):
         if self.in_queue_cup == True :
-            await self.cup.leavingPlayer(self.user, self)
+            await self.cup.leavingPlayer(self)
         if self.in_lobby == True :
             if self.room.left_player == self:
                 self.room.score[1] = 5
