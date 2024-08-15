@@ -234,11 +234,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Config SMTP EMAIL
 
+
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'mail.smtp2go.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'student.42nice.fr'
-EMAIL_HOST_PASSWORD = 'HYv5RXOEeOf6vRyt'
-DEFAULT_FROM_EMAIL = 'haouni@student.42nice.fr'
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+LOCALHOST = os.environ.get("LOCALHOST")
 
