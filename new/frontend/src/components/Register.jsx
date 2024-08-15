@@ -40,6 +40,9 @@ const Register = () => {
             if (errorData.email) {
               errorMessage += t(errorData.email) + " ";
             }
+            else if (errorData.invalid_email_format) {
+              errorMessage += t(errorData.invalid_email_format) + " ";
+            }
             else if (errorData.username) {
                 errorMessage += t(errorData.username) + " ";
             }

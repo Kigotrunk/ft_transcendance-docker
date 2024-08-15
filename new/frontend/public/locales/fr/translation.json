@@ -83,7 +83,9 @@
     "password_similar_to_username": "Le mot de passe est trop similaire au nom d'utilisateur.",
     "password_error": "Erreur de mot de passe.",
     "account with this username already exists." : "username deja utilisé",
-    "account with this email already exists." : "email deja utilisé"
+    "account with this email already exists." : "email deja utilisé",
+    "This field may not be blank." : "Ces champs ne peuvent pas être vide.",
+    "Enter a valid email address." : "Entrez une adresse e-mail valide."
 
     
     

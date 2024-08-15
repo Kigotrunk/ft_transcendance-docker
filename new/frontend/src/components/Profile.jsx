@@ -73,7 +73,7 @@ const Profile = () => {
 
   return (
     <div className="profile-content">
-      <LanguageSwitcher />
+      {isMyProfile && <LanguageSwitcher />}
       <div className="profile-card">
         <div className="profile-picture">
           {isMyProfile && (

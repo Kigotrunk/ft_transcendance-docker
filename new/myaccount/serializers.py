@@ -4,6 +4,8 @@ from django.contrib.auth import login, authenticate
 from chat.models import Conversation, PrivateMessage
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -51,6 +53,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
             validate_password(data['password1'])
         except ValidationError as e:
             errors['password_errors'] = [self.get_error_key(msg) for msg in e.messages]
+        
+        email_validator = EmailValidator()
+        try:
+            email_validator(data['email'])
+        except ValidationError:
+            errors['invalid_email_format'] = 'invalid_email_format'
 
         if Account.objects.filter(email=data['email']).exists():
             errors['email_taken'] = 'email_taken'
