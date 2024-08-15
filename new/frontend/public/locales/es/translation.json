@@ -73,5 +73,15 @@
     "Remove friend" : "Eliminar amigo",
     "Decline friend request" : "Declinar solicitud de amistad",
     "Search" : "Buscar",
-    "Type a message" : "Escriba un mensaje"
+    "Type a message" : "Escriba un mensaje",
+    "email_taken": "Esta dirección de correo electrónico ya está en uso.",
+    "username_taken": "Este nombre de usuario ya está en uso.",
+    "password_mismatch": "Las contraseñas no coinciden.",
+    "password_too_short": "La contraseña es demasiado corta.",
+    "password_too_common": "La contraseña es demasiado común.",
+    "password_entirely_numeric": "La contraseña es enteramente numérica.",
+    "password_similar_to_username": "La contraseña es demasiado similar al nombre de usuario.",
+    "password_error": "Error de contraseña.",
+    "account with this username already exists." : "nombre de usuario ya utilizado",
+    "account with this email already exists." : "correo electrónico ya utilizado"
 }

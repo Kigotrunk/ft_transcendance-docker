@@ -33,9 +33,27 @@ const Register = () => {
         navigate("/login");
       })
       .catch((error) => {
-        console.log(error);
-        setMessage("Error");
-      });
+        if (error.response && error.response.data) {
+            const errorData = error.response.data;
+            let errorMessage = "";
+    
+            if (errorData.email) {
+              errorMessage += t(errorData.email) + " ";
+            }
+            else if (errorData.username) {
+                errorMessage += t(errorData.username) + " ";
+            }
+            else if (errorData.password_mismatch) {
+                errorMessage += t(errorData.password_mismatch) + " ";
+            }
+            else if (errorData.password_errors) {
+                errorMessage += errorData.password_errors.map((msg) => t(msg)).join(' ') + " ";
+            }
+            setMessage(errorMessage.trim());
+        } else {
+            setMessage(t("Error connecting to the server. Please try again."));
+        }
+    });
   };
 
   return (

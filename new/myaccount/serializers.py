@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Account
 from django.contrib.auth import login, authenticate
 from chat.models import Conversation, PrivateMessage
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,6 +32,7 @@ class ConversationSerializer(serializers.ModelSerializer):
         model = Conversation
         fields = ('id', 'user1', 'user2', 'time')
 
+
 class RegistrationSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
@@ -39,9 +42,37 @@ class RegistrationSerializer(serializers.ModelSerializer):
         fields = ('username', 'email', 'password1', 'password2')
 
     def validate(self, data):
+        errors = {}
+
         if data['password1'] != data['password2']:
-            raise serializers.ValidationError("Les mots de passe ne correspondent pas.")
+            errors['password'] = 'password_mismatch'
+        
+        try:
+            validate_password(data['password1'])
+        except ValidationError as e:
+            errors['password_errors'] = [self.get_error_key(msg) for msg in e.messages]
+
+        if Account.objects.filter(email=data['email']).exists():
+            errors['email_taken'] = 'email_taken'
+        
+        if Account.objects.filter(username=data['username']).exists():
+            errors['username_taken'] = 'username_taken'
+
+        if errors:
+            raise serializers.ValidationError(errors)
+        
         return data
+    
+    def get_error_key(self, error_message):
+        if "too short" in error_message:
+            return "password_too_short"
+        elif "too common" in error_message:
+            return "password_too_common"
+        elif "entirely numeric" in error_message:
+            return "password_entirely_numeric"
+        elif "too similar" in error_message:
+            return "password_similar_to_username"
+        return "password_error"
 
     def create(self, validated_data):
         user = Account(

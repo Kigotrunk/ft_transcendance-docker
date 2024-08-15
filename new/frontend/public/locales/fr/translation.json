@@ -73,7 +73,17 @@
     "Remove friend" : "Retirer l'ami",
     "Decline friend request" : "Décliner la demande d'ami",
     "Search" : "Rechercher",
-    "Type a message" : "entrez un message"
+    "Type a message" : "entrez un message",
+    "email_taken": "Cette adresse e-mail est déjà utilisée.",
+    "username_taken": "Ce nom d'utilisateur est déjà pris.",
+    "password_mismatch": "Les mots de passe ne correspondent pas.",
+    "password_too_short": "Le mot de passe est trop court.",
+    "password_too_common": "Le mot de passe est trop commun.",
+    "password_entirely_numeric": "Le mot de passe est entièrement numérique.",
+    "password_similar_to_username": "Le mot de passe est trop similaire au nom d'utilisateur.",
+    "password_error": "Erreur de mot de passe.",
+    "account with this username already exists." : "username deja utilisé",
+    "account with this email already exists." : "email deja utilisé"
 
     
     
