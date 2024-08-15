@@ -10,7 +10,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=kigo
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d new'"]
       interval: 10s
@@ -52,6 +52,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       DJANGO_SETTINGS_MODULE: new.settings
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      LOCALHOST: ${LOCALHOST}
     networks:
       - transnetwork
     restart: always
@@ -90,7 +94,7 @@ services:
       - transnetwork
 
 volumes:
-  postgres_data:
+  postgres-data:
 
 networks:
   transnetwork:
