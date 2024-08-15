@@ -18,7 +18,7 @@
 .acceuil-container a {
 	text-decoration: none;
 	font-size: 2rem;
-	color: white;
+	color: var(--text);
 	background-color: var(--primary);
 	padding: 16px 32px;
 }
@@ -49,7 +49,7 @@
 .login-container a {
 	text-decoration: none;
 	font-size: 1.2rem;
-	color: white;
+	color: var(--text);
 }
 
 .login-container a:hover {
@@ -58,7 +58,7 @@
 
 .login-container button {
 	background-color: var(--primary);
-	color: white;
+	color: var(--text);
 	border: none;
 	padding: 8px 16px;
 	border-radius: 8px;
