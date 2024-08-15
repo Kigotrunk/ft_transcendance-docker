@@ -54,9 +54,7 @@ class Player:
 
     def move(self, direction):
         if self.room.game_state:
-            print("Moving")
             if self.player_side == 'left':
-                print("left")
                 self.room.leftPad.direction = direction
             elif self.player_side == 'right':
                 self.room.rightPad.direction = direction

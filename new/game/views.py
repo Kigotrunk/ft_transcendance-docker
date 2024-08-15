@@ -46,6 +46,8 @@ class UserStatus(APIView):
         print("UserStatus")
         user = request.user
         player = getPlayer(user.id)
+        if player == None:
+            return JsonResponse({'error': 'Player not found'}, status=404)
         return JsonResponse({
             'type': 'status',
             'in_lobby': player.in_lobby,
@@ -62,6 +64,8 @@ class GameInfo(APIView):
     def get(self, request):
         user = request.user
         player = getPlayer(user.id)
+        if player == None:
+            return JsonResponse({'error': 'Player not found'}, status=404)
         if player.room:
             return JsonResponse({
                 'type': 'game_info',
@@ -79,6 +83,8 @@ class JoinQueue(APIView):
     def post(self, request):
         user = request.user
         player = getPlayer(user.id)
+        if player == None:
+            return JsonResponse({'error': 'Player not found'}, status=404)
         async_to_sync(player.join_queue)()
         return JsonResponse({'message': 'Joined the queue'}, status=200)
     
@@ -89,6 +95,8 @@ class LeaveQueue(APIView):
     def post(self, request):
         user = request.user
         player = getPlayer(user.id)
+        if player == None:
+            return JsonResponse({'error': 'Player not found'}, status=404)
         async_to_sync(player.leave_queue)()
         return JsonResponse({'message': 'Left the queue'}, status=200)
     
@@ -99,8 +107,10 @@ class MovePad(APIView):
     def post(self, request):
         user = request.user
         player = getPlayer(user.id)
-        direction = request.query_params.get('direction')
+        if player == None:
+            return JsonResponse({'error': 'Player not found'}, status=404)
         try:
+            direction = request.query_params.get('direction')
             direction = int(direction)
         except:
             return JsonResponse({'error': 'Invalid direction'}, status=400)
@@ -116,9 +126,10 @@ class CreateAi(APIView):
     def post(self, request):
         user = request.user
         player = getPlayer(user.id)
-        diff = request.query_params.get('diff')
-        print(diff)
+        if player == None:
+            return JsonResponse({'error': 'Player not found'}, status=404)
         try:
+            diff = request.query_params.get('diff')
             diff = int(diff)
         except:
             return JsonResponse({'error': 'Invalid difficulty'}, status=400)
@@ -134,6 +145,8 @@ class JoinCup(APIView):
     def post(self, request):
         user = request.user
         player = getPlayer(user.id)
+        if player == None:
+            return JsonResponse({'error': 'Player not found'}, status=404)
         async_to_sync(player.join_cup)()
         return JsonResponse({'message': 'Joined the cup'}, status=200)
     
@@ -144,6 +157,8 @@ class LeaveCup(APIView):
     def post(self, request):
         user = request.user
         player = getPlayer(user.id)
+        if player == None:
+            return JsonResponse({'error': 'Player not found'}, status=404)
         async_to_sync(player.leave_cup)()
         return JsonResponse({'message': 'Left the cup'}, status=200)
 
@@ -154,6 +169,8 @@ class JoinPrivateGame(APIView):
     def post(self, request, room_name):
         user = request.user
         player = getPlayer(user.id)
+        if player == None:
+            return JsonResponse({'error': 'Player not found'}, status=404)
         try:
             room_name = room_name.replace(" ", "")
             player1 = int(room_name.split("-")[0])
@@ -172,6 +189,8 @@ class UpdateUser(APIView):
     def post(self, request):
         user = request.user
         player = getPlayer(user.id)
+        if player == None:
+            return JsonResponse({'error': 'Player not found'}, status=404)
         if (request.data['name']):
             player.name = request.data['name']
             return JsonResponse({'message': 'User updated'}, status=200)

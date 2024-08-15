@@ -3,7 +3,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 
-const TournamentMenu = ({ setMenuState, queueState }) => {
+const TournamentMenu = ({ setMenuState, queueState, setLobbyState }) => {
   const [inQueue, setInQueue] = useState(queueState);
   const { t } = useTranslation();
   const leaveCup = async () => {
@@ -13,6 +13,7 @@ const TournamentMenu = ({ setMenuState, queueState }) => {
       );
       console.log(response.data);
       setInQueue(false);
+      setLobbyState("");
     } catch (error) {
       console.error(error);
     }

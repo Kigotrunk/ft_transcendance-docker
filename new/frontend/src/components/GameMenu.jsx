@@ -7,8 +7,8 @@ import {
 } from "./GameMenuUtils";
 import { useTranslation } from "react-i18next";
 
-const GameMenu = ({ menuState, setMenuState, countdown, gameResult }) => {
-    const { t } = useTranslation();
+const GameMenu = ({ menuState, setMenuState, countdown, gameResult, setLobbyState }) => {
+  const { t } = useTranslation();
   const getMenuState = () => {
     if (menuState === "") {
       return null;
@@ -17,7 +17,7 @@ const GameMenu = ({ menuState, setMenuState, countdown, gameResult }) => {
     } else if (menuState === "ai") {
       return <VersusAiMenu setMenuState={setMenuState} />;
     } else if (menuState === "tournament") {
-      return <TournamentMenu setMenuState={setMenuState} queueState={false} />;
+      return <TournamentMenu setMenuState={setMenuState} queueState={false} setLobbyState={setLobbyState} />;
     } else if (menuState === "duel") {
       return <WaitingDuelMenu setMenuState={setMenuState} queueState={false} />;
     } else if (menuState === "cup-waiting") {
@@ -35,7 +35,7 @@ const GameMenu = ({ menuState, setMenuState, countdown, gameResult }) => {
     } else if (menuState === "in-queue") {
       return <WaitingDuelMenu setMenuState={setMenuState} queueState={true} />;
     } else if (menuState === "cup-queue") {
-      return <TournamentMenu setMenuState={setMenuState} queueState={true} />;
+      return <TournamentMenu setMenuState={setMenuState} queueState={true} setLobbyState={setLobbyState} />;
     }
     return null;
   };

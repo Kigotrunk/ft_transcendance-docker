@@ -73,7 +73,6 @@ class pongGame :
             time.sleep(4)
         while True : 
             self.time_per_point += 1
-            print(self.time_per_point)
             if self.goal == True :
                 self.timers.append(self.time_per_point)
                 self.time_per_point = 0
@@ -202,6 +201,7 @@ class pongGame :
                 del self.ball
                 print("end of game")
                 removeGame(self.room_name)
+                del self
                 break
             await asyncio.sleep(0.01)
 
@@ -308,7 +308,6 @@ class pongGame :
         )
     
     async def send_game_result(self, winner, loser):
-        print("ALLO")
         if self.is_cup == True:
             game_result = {
                 'mode' : "cup",
