@@ -78,9 +78,13 @@ services:
       - ./new/media:/media:ro
       - ./nginx/ft_transcendence.conf:/etc/nginx/conf.d/ft_transcendence.conf
       - ./nginx/certificates:/certificates
+      - ./nginx/ft_transcendence.conf.template:/etc/nginx/conf.d/ft_transcendence.conf.template
+      - ./entrypoint.sh:/entrypoint.sh
     depends_on:
       - frontend
       - backend
+    environment:
+      LOCALHOST: ${LOCALHOST}
     restart: always
     networks:
       - transnetwork
