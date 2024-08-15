@@ -126,6 +126,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         lobby_state = event['lobby_state']
         await self.send(text_data=json.dumps(lobby_state))
 
+    async def next_game_countdown(self, event):
+        next_game_countdown = event['next_game_countdown']
+        await self.send(text_data=json.dumps(next_game_countdown))
+
     async def cup_match_result(self, event):
         cup_match_result = event['cup_match_result']
         await self.send(text_data=json.dumps(cup_match_result))

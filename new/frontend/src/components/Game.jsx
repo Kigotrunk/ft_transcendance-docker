@@ -9,7 +9,7 @@ import PlayerCard from "./PlayerCard";
 import { useTranslation } from "react-i18next";
 
 const PongGame = () => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const { invite } = useParams();
   const [lobbyState, setLobbyState] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
@@ -55,8 +55,16 @@ const PongGame = () => {
       const response = await axios.get("https://localhost:8000/game/info/");
       console.log(response.data);
       if (!response.data["left"] || !response.data["right"]) return;
-      getPlayerProfile(response.data["left"], "left", response.data["left_username"]);
-      getPlayerProfile(response.data["right"], "right", response.data["right_username"]);
+      getPlayerProfile(
+        response.data["left"],
+        "left",
+        response.data["left_username"]
+      );
+      getPlayerProfile(
+        response.data["right"],
+        "right",
+        response.data["right_username"]
+      );
     } catch (error) {
       console.error(error);
     }
@@ -88,6 +96,12 @@ const PongGame = () => {
     console.log(data);
     if (data["type"] === "lobby_state") {
       setLobbyState(data["message"]);
+    } else if (data["type"] === "next_game_countdown") {
+      if (data["message"] != "0") {
+        setLobbyState(t("Next Match in:") + data["message"]);
+      } else {
+        setLobbyState("");
+      }
     } else if (data["type"] === "countdown") {
       setCountdown(data["countdown"]);
       setMenuState("countdown");
@@ -226,7 +240,9 @@ const PongGame = () => {
   return (
     <div className="game-content">
       <div id="lobby-state">{lobbyState}</div>
-      {!gameSocketConnected && <div>{t('Connection lost, trying to reconnect...')}</div>}
+      {!gameSocketConnected && (
+        <div>{t("Connection lost, trying to reconnect...")}</div>
+      )}
       <div id="game-info">
         {leftPlayer && <PlayerCard player={leftPlayer} />}
         <div id="game-container">

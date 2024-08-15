@@ -15,7 +15,7 @@ function AuthProvider(props) {
   const [chatNotifsId, setChatNotifsId] = useState([]);
   const [gameSocketConnected, setGameSocketConnected] = useState(false);
   const [chatSocketConnected, setChatSocketConnected] = useState(false);
-  const [currentGameMode, setCurrentGameMode] = useState("");
+  const [nextGameTime, setNextGameTime] = useState(null);
 
   const setTokens = (access, refresh) => {
     setAccess(access);
@@ -164,6 +164,12 @@ function AuthProvider(props) {
     }
   }, [refresh]);
 
+  useEffect(() => {
+    if (nextGameTime == "0") {
+      setNextGameTime(null);
+    }
+  }, [nextGameTime]);
+
   const value = {
     isLog,
     user,
@@ -178,6 +184,8 @@ function AuthProvider(props) {
     refreshUser,
     gameSocketConnected,
     chatSocketConnected,
+    nextGameTime,
+    setNextGameTime,
   };
 
   return <AuthContext.Provider value={value} {...props} />;

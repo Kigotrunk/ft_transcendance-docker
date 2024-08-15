@@ -10,14 +10,14 @@ import TalkSection from "./ChatUtils/TalkSection";
 import { useTranslation } from "react-i18next";
 
 const Chat = () => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const { cid } = useParams();
   const navigate = useNavigate();
   const [conversations, setConversations] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [isBlocked, setIsBlocked] = useState(false);
   const [newConv, setNewConv] = useState(false);
-  const { user, setChatNotifsId, chatNotifsId, chatSocketRef } =
+  const { user, setChatNotifsId, chatNotifsId, chatSocketRef, nextGameTime } =
     useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -94,10 +94,10 @@ const Chat = () => {
     <div className="chat-content">
       <div className="conv-list">
         <div className="conv-header">
-          <span>{t('Privates messages')}</span>
+          <span>{t("Privates messages")}</span>
           <div
             id="new-conv-btn"
-            title={t('New private message')}
+            title={t("New private message")}
             onClick={() => setNewConv(true)}
           >
             +

@@ -6,6 +6,7 @@ from channels.db import database_sync_to_async
 from myaccount.models import Account
 from .globals import setGame, getGame, removeGame, setCups, getCup, removeCup, setPlayer, getPlayer, removePlayer, queue, nb_room, players, games, cups, matchmaking_task
 import threading, time
+from chat.consumers import chat_consumers
 
 class pongGame :
 
@@ -83,20 +84,38 @@ class pongGame :
 	
 
     async def waiting_cup_opponents(self):
-        i = 6
+        i = 10
         while(i > 0):
             await asyncio.sleep(1)
             i-= 1
             await self.pongConsumer.channel_layer.group_send(
                 self.room_group_name,
                 {
-                'type': 'lobby_state',
-                'lobby_state': {
-                    'type': 'lobby_state',
-                    'message': f"{self.left_player.name} VS {self.right_player.name} starts in {i} seconds\n" if i != 0 else ""
+                'type': 'next_game_countdown',
+                'next_game_countdown': {
+                    'type': 'next_game_countdown',
+                    'message': f"{i}"
                 }
-            }
+            } 
             )
+            if i < 10 :
+                if self.left_player.id in chat_consumers:
+                    await chat_consumers[self.left_player.id].send(text_data=json.dumps(
+                        {
+                            'message' : f"{i}",
+                            'issuer': "Tournament Info",
+                            'receiver' : self.left_player.name
+                        }
+                    ))
+                if self.right_player.id in chat_consumers:
+                    await chat_consumers[self.right_player.id].send(text_data=json.dumps(
+                        {
+                            'message' : f"{i}",
+                            'issuer': "Tournament Info",
+                            'receiver' : self.right_player.name
+                        }
+                    ))
+
         asyncio.create_task(self.start_countdown())
 
     async def start_countdown(self):

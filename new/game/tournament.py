@@ -30,15 +30,22 @@ class tournament() :
         self.winners1 = []
         self.winners2 = []
         self.all_rounds = []
-        print(self.list_player)
+        print("tournament created")
+        for player in self.list_player:
+            print(player.name)
 
     async def newContestant(self, player):
         self.player_count += 1
         self.list_player.append(player)
         await self.sendLobbyState()
+        print("new contestant")
+        for player in self.list_player:
+            print(player.name)
         if self.player_count == self.max_players:
             await self.launchTournament()
-        print(self.list_player)
+        print("cup launched")
+        for player in self.list_player:
+            print(player.name)
 
     async def leavingPlayer(self, player):
         i = 0
@@ -67,24 +74,6 @@ class tournament() :
         await self.save_is_in_game_all()
         await self.create_room_cup()
 
-    async def send_chat_opponent(self, player1, player2):
-        if player1.id in chat_consumers:
-            await chat_consumers[player1.id].send(text_data=json.dumps(
-                {
-                    'message' : "Next tournament match against " + player2.name + " starts in 60 secs !",
-                    'issuer': "Tournament Info",
-                    'receiver' : player1.name
-                }
-            ))
-        if player2.id in chat_consumers:
-            await chat_consumers[player2.id].send(text_data=json.dumps(
-                {
-                    'message' : "Next tournament match against " + player2.name + " starts in 60 secs !",
-                    'issuer': "Tournament Info",
-                    'receiver' : player2.name
-                }
-            ))
-
     async def sendLobbyState(self):
         await self.tournament_consumer.channel_layer.group_send(
             self.cup_group_name,
@@ -92,7 +81,7 @@ class tournament() :
                 'type': 'lobby_state',
                 'lobby_state': {
                     'type': 'lobby_state',
-                    'message': f"waiting for players: {self.player_count} / {self.max_players}" 
+                    'message': f"{self.player_count} / {self.max_players}" 
                 }
             }
         )
@@ -153,7 +142,6 @@ class tournament() :
             matches.append(match_info)
             i += 2
             print(i)
-            await self.send_chat_opponent(player1, player2)
         print(matches)
         
         await self.send_tournament_state(matches)
@@ -210,7 +198,7 @@ class tournament() :
                     'type': 'lobby_state',
                     'lobby_state': {
                         'type': 'lobby_state',
-                        'message': f"{winner.name} has won the tournament\n"
+                        'message': "win"
                     }
                 }
             )

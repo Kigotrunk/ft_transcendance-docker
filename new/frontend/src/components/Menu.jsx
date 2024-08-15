@@ -10,9 +10,15 @@ import Notif from "./Notif";
 import { useTranslation } from "react-i18next";
 
 const Menu = ({ showPhoneMenu, setShowPhoneMenu }) => {
-    const { t } = useTranslation();
-  const { logout, user, chatSocketRef, chatNotifsId, setChatNotifsId } =
-    useContext(AuthContext);
+  const { t } = useTranslation();
+  const {
+    logout,
+    user,
+    chatSocketRef,
+    chatNotifsId,
+    setChatNotifsId,
+    setNextGameTime,
+  } = useContext(AuthContext);
   const [gameNotifs, setGameNotifs] = useState(false);
   const navigate = useNavigate();
   // const [notifs, setNotifs] = useState([]);
@@ -23,6 +29,7 @@ const Menu = ({ showPhoneMenu, setShowPhoneMenu }) => {
     console.log(data);
     if (data.issuer === "Tournament Info") {
       if (window.location.pathname !== "/game") setGameNotifs(true);
+      setNextGameTime(data.message);
       return;
     }
     setChatNotifsId((prev) => {
@@ -76,13 +83,13 @@ const Menu = ({ showPhoneMenu, setShowPhoneMenu }) => {
                 setShowPhoneMenu(false);
               }}
             >
-              <span>{t('Game')}</span>
+              <span>{t("Game")}</span>
             </NavLink>
             <NavLink to="/chat" onClick={() => setShowPhoneMenu(false)}>
               <span>Chat</span>
             </NavLink>
             <Link onClick={logout}>
-              <span>{t('Logout')}</span>
+              <span>{t("Logout")}</span>
             </Link>
           </div>
 

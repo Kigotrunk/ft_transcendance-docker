@@ -66,10 +66,8 @@ class Player:
         self.room_group_name = f"game_{self.room_name}"
         if self.room is None:
             await self.create_room()
-            print(f"Creating room {self.room_name}")
         else:
             await self.join_existing_room()
-            print(f"Joining room {self.room_name}")
 
     async def join_queue(self):
         if self in queue:
@@ -140,9 +138,11 @@ class Player:
             self.cup_group_name = f"game_{self.cup_name}"
             if self.cup is None:
                 await self.create_cup(i)
+                return
             else:
                 if self.cup.player_count < 8:
                     await self.join_existing_cup()
+                    return
             i += 1
         
     async def leave_cup(self):
