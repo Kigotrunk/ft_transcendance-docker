@@ -6,7 +6,7 @@ import GameDetails from "./GameDetails";
 import { useTranslation } from "react-i18next";
 
 const History = ({ id }) => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const [history, setHistory] = useState([]);
   const [page, setPage] = useState(1);
   const [showMore, setShowMore] = useState(true);
@@ -47,33 +47,35 @@ const History = ({ id }) => {
         : game.score_player2 - game.score_player1;
     return (
       <div className="match-container">
-      <div className={`match ${result > 0 ? "win" : result < 0 ? "lose" : ""}`}>
-        <Link to={`/profile/${game.player1.id}`} className="history-user">
-          {game.player1.username}
-        </Link>
-        <div className="history-score">
-          {game.score_player1} - {game.score_player2}
+        <div
+          className={`match ${result > 0 ? "win" : result < 0 ? "lose" : ""}`}
+        >
+          <Link to={`/profile/${game.player1.id}`} className="history-user">
+            {game.player1.username}
+          </Link>
+          <div className="history-score">
+            {game.score_player1} - {game.score_player2}
+          </div>
+          <Link to={`/profile/${game.player2.id}`} className="history-user">
+            {game.player2.username}
+          </Link>
+          <div className="history-time">
+            {new Date(game.time).toLocaleDateString()}
+          </div>
+          <div
+            className="btn-match-details"
+            onClick={() => setShowDetails(!showDetails)}
+          >
+            ...
+          </div>
         </div>
-        <Link to={`/profile/${game.player2.id}`} className="history-user">
-          {game.player2.username}
-        </Link>
-        <div className="history-time">
-          {new Date(game.time).toLocaleDateString()}
-        </div>
-        <div className="btn-match-details" onClick={() => setShowDetails(!showDetails)}>
-          ...
-        </div>
-        
-      </div>
-      {showDetails && (
-          <GameDetails game={game} />
-        )}
+        {showDetails && <GameDetails game={game} />}
       </div>
     );
   };
 
   if (history.length === 0) {
-    return <div className="history">{t('No games played yet')}</div>;
+    return <div className="history">{t("No games played yet")}</div>;
   }
 
   return (
@@ -83,7 +85,7 @@ const History = ({ id }) => {
       ))}
       {showMore && (
         <div className="history-see-more" onClick={SeeMore}>
-          {t('See More')}
+          {t("See More")}
         </div>
       )}
     </div>

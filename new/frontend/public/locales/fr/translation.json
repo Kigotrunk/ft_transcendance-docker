@@ -85,8 +85,7 @@
     "account with this username already exists." : "username deja utilisé",
     "account with this email already exists." : "email deja utilisé",
     "This field may not be blank." : "Ces champs ne peuvent pas être vide.",
-    "Enter a valid email address." : "Entrez une adresse e-mail valide."
-
-    
-    
+    "Enter a valid email address." : "Entrez une adresse e-mail valide.",
+    "scored": "a marqué",
+    "Next game in ": "Prochain match dans"
 }

@@ -103,6 +103,11 @@ const Chat = () => {
             +
           </div>
         </div>
+        {nextGameTime && (
+          <div style={{ backgroundColor: "red" }}>
+            {t("Next game in ") + nextGameTime}
+          </div>
+        )}
         {conversations.map((conversation) => (
           <ConvCard
             key={conversation.id}
