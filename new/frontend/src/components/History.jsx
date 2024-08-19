@@ -69,7 +69,7 @@ const History = ({ id }) => {
             ...
           </div>
         </div>
-        {showDetails && <GameDetails game={game} />}
+        {showDetails && <GameDetails game={game} uid={id} />}
       </div>
     );
   };

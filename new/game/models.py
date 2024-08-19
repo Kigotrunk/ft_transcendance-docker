@@ -338,10 +338,6 @@ class   pad:
         self.direction = 0
         #self.algorithm = algorithm(bal, self, diff, playerPad)
 
-    def sprite(self, win, color):
-
-        pygame.draw.rect(win, color, (self.x, self.y, self.width, self.height))
-
     def move(self):
         if self.direction == 1:
             if self.y > 0 :
@@ -349,21 +345,6 @@ class   pad:
         elif self.direction == -1:
             if self.y < 520 :
                 self.y += self.speed
-
-    """
-    async def move_loop(self, direction):
-        if (direction == 1):
-            while self.y > 0:
-                self.y -= 5
-                print(self.y)
-                await asyncio.sleep(0.01)
-                
-        elif (direction == -1):
-            while self.y < 520:
-                self.y += 5
-                print(self.y)
-                await asyncio.sleep(0.01)
-    """
 
 class   pad_ai:
 
@@ -379,10 +360,6 @@ class   pad_ai:
         self.travelTime = 0
         self.direction = 0
         self.algorithm = algorithm(bal, self, diff, playerPad)
-
-    def sprite(self, win, color):
-
-        pygame.draw.rect(win, color, (self.x, self.y, self.width, self.height))
 
     def move(self, up = True):
         if up :
@@ -409,10 +386,6 @@ class   ball:
         self.rad = rad
         self.xSpeed = self.maxSpeed
         self.ySpeed = 0
-
-    def sprite(self, win, color):
-
-        pygame.draw.circle(win, color, (self.x, self.y), self.rad)
 
     def move(self):
 

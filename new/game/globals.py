@@ -18,7 +18,8 @@ def getPlayer(key):
         return None
     
 def removePlayer(key):
-    del players[key]
+    if key in players :
+        del players[key]
 
 def  setGame(key, value):
     games[key]=value
@@ -30,7 +31,8 @@ def getGame(key):
         return None
     
 def removeGame(key):
-    del games[key]
+    if key in games :
+        del games[key]
 
 def setCups(key, value):
     cups[key]=value
@@ -42,7 +44,8 @@ def getCup(key):
         return None
     
 def removeCup(key):
-    del cups[key]
+    if key in cups :
+        del cups[key]
 
 # def lunchMatchmaking():
 #     global matchmaking_task

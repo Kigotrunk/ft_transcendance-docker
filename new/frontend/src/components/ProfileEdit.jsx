@@ -39,10 +39,10 @@ const ProfileEdit = () => {
     } catch (error) {
       console.error(error);
       if (error.response.data.username) {
-        setUsernameError(error.response.data.username[0]);
+        setUsernameError(t(error.response.data.username[0]));
       }
       if (error.response.data.profile_picture) {
-        setProfilePictureError(error.response.data.profile_picture[0]);
+        setProfilePictureError(t(error.response.data.profile_picture[0]));
       }
     }
   };

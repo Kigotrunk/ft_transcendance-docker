@@ -4,6 +4,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "../css/login.css";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Login = () => {
 
@@ -33,6 +34,7 @@ const Login = () => {
 
   return (
     <div className="login-content">
+      <LanguageSwitcher />
       <div className="login-container">
       <span style={{fontSize:"64px"}}>{t('login')}</span>
       <form onSubmit={handleSubmit} className="login-form">

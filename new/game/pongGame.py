@@ -215,6 +215,14 @@ class pongGame :
                     self.rightPad.algorithm.dedge = True
                     self.left_player.in_lobby = False
                     del self.rightPad.algorithm
+                await self.left_player.consumers.channel_layer.group_discard(
+                    self.left_player.room_group_name,
+                    self.left_player.consumers.channel_name
+                )
+                await self.right_player.consumers.channel_layer.group_discard(
+                    self.right_player.room_group_name,
+                    self.right_player.consumers.channel_name
+                )
                 del self.leftPad
                 del self.rightPad
                 del self.ball

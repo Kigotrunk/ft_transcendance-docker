@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "../css/login.css";
 import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Register = () => {
     const { t } = useTranslation();
@@ -61,6 +62,7 @@ const Register = () => {
 
   return (
     <div className="login-content">
+      <LanguageSwitcher />
       <div className="login-container">
       <span style={{fontSize:"64px"}}>{t('Register')}</span>
       <form className="register-form" onSubmit={handleFormValidation}>

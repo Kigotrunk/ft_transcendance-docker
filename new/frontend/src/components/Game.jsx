@@ -234,6 +234,8 @@ const PongGame = () => {
     setScore("");
     if (menuState === "main") {
       setMatchList([]);
+      setLeftPlayer(null);
+      setRightPlayer(null);
     }
   }, [menuState]);
 
@@ -258,6 +260,7 @@ const PongGame = () => {
             setMenuState={setMenuState}
             countdown={countdown}
             gameResult={gameResult}
+            setLobbyState={setLobbyState}
           />
         </div>
         {rightPlayer && <PlayerCard player={rightPlayer} />}
