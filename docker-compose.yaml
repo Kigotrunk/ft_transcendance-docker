@@ -10,7 +10,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=kigo
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d new'"]
       interval: 10s
